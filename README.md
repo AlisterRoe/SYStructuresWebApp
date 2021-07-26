@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 # SySructuresWebApp
 Repo for the SY Structures automation web app
-=======
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -72,4 +71,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
->>>>>>> b8b6a7d76e5aa00bfe9f96c20603f50f5a690010
