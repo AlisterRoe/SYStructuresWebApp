@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Button, Alert } from 'react-bootstrap'
+import { Card, Button, Alert, Navbar, Container, Nav } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 
@@ -21,6 +21,18 @@ export default function Dashboard() {
 
   return (
     <>
+      <Navbar bg="light">
+        <Container>
+          <Navbar.Brand>App</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link href="/update-profile">Update Profile</Nav.Link>
+              <Nav.Link>Help</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
       <Card>
         <Card.Body>
           <h2 className="text-center mb-4">Profile</h2>
