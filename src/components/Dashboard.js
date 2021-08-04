@@ -21,19 +21,16 @@ export default function Dashboard() {
 
   return (
     <>
-      <Navbar bg="light" style={{ backgroundColor: "#38DE6B", minHeight: "7vh" }}>
-        <Container>
-          <Navbar.Brand>App</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
+      <Navbar className="navbar-dark bg-dark" style={{ minHeight: "7vh" }}>
+        <Container style={{ minWidth: "90vw" }}>
+          <Navbar.Brand>SY STRUCTURES</Navbar.Brand>
+            <Nav className="mr-auto">
               <Nav.Link href="/update-profile">Update Profile</Nav.Link>
               <Nav.Link>Help</Nav.Link>
-              <Link onClick={handleLogout} className="btn btn-primary">
+              <Link onClick={handleLogout} className="btn btn-primary pull-right">
                 Log Out
               </Link>
             </Nav>
-          </Navbar.Collapse>
         </Container>
       </Navbar>
       <Container fluid>
