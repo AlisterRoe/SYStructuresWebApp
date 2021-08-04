@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Button, Alert, Navbar, Container, Nav } from 'react-bootstrap'
+import { Alert, Navbar, Container, Nav, Row, Col } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <Navbar bg="light">
+      <Navbar bg="light" style={{ backgroundColor: "#38DE6B", minHeight: "7vh" }}>
         <Container>
           <Navbar.Brand>App</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -29,12 +29,32 @@ export default function Dashboard() {
             <Nav className="me-auto">
               <Nav.Link href="/update-profile">Update Profile</Nav.Link>
               <Nav.Link>Help</Nav.Link>
+              <Link onClick={handleLogout} className="btn btn-primary">
+                Log Out
+              </Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-        <div className="w100" style={{ maxWidth: "400px" }}>
+      <Container fluid>
+        <Row style={{ backgroundColor: "#38DE6B", minHeight: "25vh" }}>
+          <Col xs={4}>1 of 3</Col>
+          <Col style={{ backgroundColor: "#1EC8ED" }}>2 of 3</Col>
+          <Col xs={3}>3 of 3</Col>
+        </Row>
+        <Row style={{ backgroundColor: "#D369F9", minHeight: "34vh" }}>
+          <Col>1 of 4</Col>
+          <Col style={{ backgroundColor: "#E10029" }}>2 of 4</Col>
+          <Col>3 of 4</Col>
+          <Col style={{ backgroundColor: "#E10029" }}>4 of 4</Col>
+        </Row>
+        <Row style={{ backgroundColor: "#38DE6B", minHeight: "34vh" }}>
+          <Col>1 of 4</Col>
+          <Col style={{ backgroundColor: "#1EC8ED" }}>2 of 4</Col>
+          <Col>3 of 4</Col>
+          <Col style={{ backgroundColor: "#1EC8ED" }}>4 of 4</Col>
+        </Row>
+        {/* <div className="w100" style={{ maxWidth: "400px" }}>
           <Card>
             <Card.Body>
               <h2 className="text-center mb-4">Profile</h2>
@@ -50,7 +70,7 @@ export default function Dashboard() {
               Log Out
             </Button>
           </div>
-        </div>
+        </div> */}
       </Container>
     </>
   )
