@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, Navbar, Container, Nav, Row, Col } from 'react-bootstrap'
+import { Alert, Navbar, Container, Nav, Row, Col, Card, Form, Button } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 
@@ -33,23 +33,108 @@ export default function Dashboard() {
             </Nav>
         </Container>
       </Navbar>
+
       <Container fluid>
-        <Row style={{ backgroundColor: "#38DE6B", minHeight: "25vh" }}>
-          <Col xs={4}>1 of 3</Col>
-          <Col style={{ backgroundColor: "#1EC8ED" }}>2 of 3</Col>
-          <Col xs={3}>3 of 3</Col>
+        <Row style={{  height: "25vh" }}>
+          <Col xs={4} className="align-middle">
+            <Card className="m-2">
+              <Container className="mt-2">
+                <h4>SELECT JOB</h4>
+              </Container>
+              <Card.Body>
+                <Form className="d-flex align-items-center justify-content-center flex-row">
+                  <Container>
+                    <Form.Group className="mb-2" id="job-number">
+                        <Form.Label className="mb-0">JOB NUMBER</Form.Label>
+                        <Form.Control type="email" required />
+                    </Form.Group>
+                    <Form.Group id="job-name">
+                        <Form.Label className="mb-0">JOB NAME</Form.Label>
+                        <Form.Control type="password" />
+                    </Form.Group>
+                  </Container>
+                  <Container className="text-center">
+                    <div>CURRENT JOB</div> {currentUser.email}
+                    <Button className="w-100 mt-5" variant="outline-dark" type="submit">SELECT</Button>
+                  </Container>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col className="d-flex align-items-center flex-column justify-content-evenly">
+            <Button className="w-50" variant="outline-dark" type="submit">SAVED RECEIVED DOCUMENTS</Button>
+            <Button className="w-50" variant="outline-dark" type="submit">ISSUE SY DOCUMENT</Button>
+          </Col>
+          <Col xs={3} className="d-flex align-items-center justify-content-center">
+            <Card className="w-75 h-75">
+              <Container className="mt-3 text-center">
+                <h5>CREATE NEW JOB</h5>
+              </Container>
+              <Card.Body className="d-flex align-items-center justify-content-center">
+                <Button className="w-50" variant="outline-dark" type="submit">CREATE</Button>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
-        <Row style={{ backgroundColor: "#D369F9", minHeight: "34vh" }}>
-          <Col>1 of 4</Col>
-          <Col style={{ backgroundColor: "#E10029" }}>2 of 4</Col>
-          <Col>3 of 4</Col>
-          <Col style={{ backgroundColor: "#E10029" }}>4 of 4</Col>
+        <Row style={{ height: "34vh" }}>
+          <Col>
+            <Container className="text-center" style={{ height: "10%"}}>
+              <h5>ADMIN DOCUMENTS</h5>
+            </Container>
+            <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
+              <Button className="w-100" variant="outline-dark" type="submit">FEE PROPOSAL</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">FEE VARIATION</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">LETTER</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">REPORT</Button>
+            </Container>
+          </Col>
+          <Col>
+            <Container className="text-center" style={{ height: "10%" }}>
+                <h5>CONCEPT</h5>
+              </Container>
+              <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
+                <Button className="w-100" variant="outline-dark" type="submit">DESIGN BREIF</Button>
+                <Button className="w-100" variant="outline-dark" type="submit">GEOTECH FEE REQUEST</Button>
+                <Button className="w-100" variant="outline-dark" type="submit">CONCEPT DESIGN CHECKLIST</Button>
+              </Container>
+          </Col>
+          <Col>
+            <Container className="text-center" style={{ height: "10%" }}>
+              <h5>DESIGN & DOCUMENTATION</h5>
+            </Container>
+            <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
+              <Button className="w-100" variant="outline-dark" type="submit">SAFETY IN DESIGN REPORT</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">STRUCTURAL SPECIFICATIONS</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">CALCULATION DOCUMENT</Button>
+            </Container>
+          </Col>
+          <Col>
+            <Container className="text-center" style={{ height: "10%" }}>
+              <h5>CONSTRUCTION</h5>
+            </Container>
+            <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
+              <Button className="w-100" variant="outline-dark" type="submit">SITE INSPECTION REPORT</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">LETTER OF COMPLIANCE</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">SHOP DRAWING REVIEW</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">CERTIFICATION LETTER</Button>
+            </Container>
+          </Col>
         </Row>
-        <Row style={{ backgroundColor: "#38DE6B", minHeight: "34vh" }}>
-          <Col>1 of 4</Col>
-          <Col style={{ backgroundColor: "#1EC8ED" }}>2 of 4</Col>
-          <Col>3 of 4</Col>
-          <Col style={{ backgroundColor: "#1EC8ED" }}>4 of 4</Col>
+        <Row style={{ height: "34vh" }}>
+          <Col>
+            <Container className="text-center" style={{ height: "10%" }}>
+              <h5>QA</h5>
+            </Container>
+            <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
+              <Button className="w-100" variant="outline-dark" type="submit">VERIFY ENGINEERING CHECKLIST</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">VERIFY BIM CHECKLIST</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">VERIFY DRAWING REVIEW</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">VERIFY SAFETY IN DESIGN</Button>
+            </Container>
+          </Col>
+          <Col></Col>
+          <Col></Col>
+          <Col></Col>
         </Row>
         {/* <div className="w100" style={{ maxWidth: "400px" }}>
           <Card>
