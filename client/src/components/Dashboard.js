@@ -25,7 +25,7 @@ export default function Dashboard() {
   const inputFile = useRef(null)
   const [file, setFile] = useState(null)
   const [filename, setFilename] = useState('')
-  const [show, setShow] = useState(false)
+  const [showFileUploadSuccess, setShowFileUploadSuccess] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -44,7 +44,6 @@ export default function Dashboard() {
         fields: 'files(name,id)'
       })
       .then((response) => {
-        console.log(response);
         const myQueriedFolder = response.data;
         setQueriedFolder(myQueriedFolder);
       });
@@ -60,6 +59,8 @@ export default function Dashboard() {
   }
   
   const jobNumberRef = useRef()
+  const [fileUploadError, setFileUploadError] = useState("")
+  const [showFileUploadError, setShowFileUploadError] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -68,28 +69,37 @@ export default function Dashboard() {
   }
 
   async function onFileSubmit() {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('id', queriedFolder[0].id);
-
-    try {
-      await axios.post(baseURL + '/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-    
-      setFile(null);
-      setMessage('Successfully uploaded ' + filename);
-      setFilename('');
-      setShow(true);
-
-    } catch (err) {
-      if (err.response.status === 500) {
-        // setMessage('There was a problem with the server');
+      const formData = new FormData();
+      if (queriedFolder === null || queriedFolder.length === 0) {
+        console.log("No job")
+        setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
+        setShowFileUploadError(true);
+        setFile(null);
+        return;
       } else {
-        // setMessage(err.response.data.msg);
-      }
+        formData.append('file', file);
+        formData.append('id', queriedFolder[0].id);
+    
+        try {
+          await axios.post(baseURL + '/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        
+          setShowFileUploadError(false);
+          setFile(null);
+          setMessage('Successfully uploaded ' + filename);
+          setFilename('');
+          setShowFileUploadSuccess(true);
+    
+        } catch (err) {
+          if (err.response.status === 500) {
+            // setMessage('There was a problem with the server');
+          } else {
+            // setMessage(err.response.data.msg);
+          }
+        }
     }
   };
 
@@ -120,9 +130,15 @@ export default function Dashboard() {
         </Container>
       </Navbar>
 
-      <Alert show={show} variant="success" className="d-flex align-items-center justify-content-between flex-row">
+      <Alert show={showFileUploadSuccess} variant="success" className="d-flex align-items-center justify-content-between flex-row">
         {message}
-        <Button onClick={() => setShow(false)} variant="outline-success">
+        <Button onClick={() => setShowFileUploadSuccess(false)} variant="outline-success">
+          Close
+        </Button>
+      </Alert>
+      <Alert show={showFileUploadError} variant="danger" className="d-flex align-items-center justify-content-between flex-row">
+        {fileUploadError}
+        <Button onClick={() => setShowFileUploadError(false)} variant="outline-danger">
           Close
         </Button>
       </Alert>
