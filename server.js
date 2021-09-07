@@ -192,12 +192,13 @@ app.post('/upload', (req, res) => {
   }
 
   const file = req.files.file;
+  const parentId = req.body.id;
 
   const drive = google.drive({ version: 'v3', auth });
   
   var fileMetadata = {
     name: file.name,
-    parents: ['0B3sWiBPjF4DfNWJJaFU0a1I3amc']
+    parents: [parentId]
   };
   var media = {
     mimeType: file.mimeType,

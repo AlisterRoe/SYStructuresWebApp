@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [error, setError] = useState("")
   const { currentUser, logout } = useAuth()
   const history = useHistory()
+  
   async function handleLogout() {
     setError("")
 
@@ -69,6 +70,7 @@ export default function Dashboard() {
   async function onFileSubmit() {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('id', queriedFolder[0].id);
 
     try {
       await axios.post(baseURL + '/upload', formData, {
@@ -145,7 +147,7 @@ export default function Dashboard() {
                     </Form.Group>
                   </Container>
                   <Container className="text-center">
-                    <div>CURRENT JOB</div> {queriedFolder === null || queriedFolder.length === 0 ? 'No Job Selected' : queriedFolder[0].name}
+                    <div>CURRENT JOB</div> {queriedFolder === null || queriedFolder.length === 0 ? 'No Job Selected' : queriedFolder[0].id}
                     <Button className="w-100 mt-5" variant="outline-dark" type="submit">SELECT</Button>
                   </Container>
                 </Form>
