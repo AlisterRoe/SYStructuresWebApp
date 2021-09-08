@@ -71,7 +71,6 @@ export default function Dashboard() {
   async function onFileSubmit() {
       const formData = new FormData();
       if (queriedFolder === null || queriedFolder.length === 0) {
-        console.log("No job")
         setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
         setShowFileUploadError(true);
         setFile(null);

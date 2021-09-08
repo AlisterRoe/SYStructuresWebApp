@@ -85,7 +85,7 @@ function getAccessToken(oAuth2Client) {
 
 app.post('/uploadAFolder', (req, res) => {
   var fileMetadata = req.body
-  console.log(fileMetadata)
+  // console.log(fileMetadata)
   // fileMetadata = {
   //   'name': 'Test Node',
   //   'parents': ['0B3sWiBPjF4DfNWJJaFU0a1I3amc'],
@@ -121,7 +121,7 @@ app.post('/uploadAFolder', (req, res) => {
 
 app.post('/getFolder', (req, res) => {
   var fileMetadata = req.body
-  console.log(fileMetadata)
+  // console.log(fileMetadata)
   // var fileMetadata = {
   //   q: "mimeType='application/vnd.google-apps.folder'",
   //   q: "name='21'",
@@ -148,41 +148,6 @@ app.post('/getFolder', (req, res) => {
           console.log('No files found.');
       }
       res.send(files);
-  });
-});
-
-app.post('/uploadFile', (req, res) => {
-  var fileMetadata = req.body
-  console.log(fileMetadata)
-  // var fileMetadata = {
-  //   q: "mimeType='application/vnd.google-apps.folder'",
-  //   q: "name='21'",
-  //   fields: 'files(name, id)'
-  // };
-  // console.log(fileMetadata)
-
-  const drive = google.drive({ version: 'v3', auth });
-  
-  var fileMetadata = {
-    name: 'testfromserver.jpg',
-    parents: ['0B3sWiBPjF4DfNWJJaFU0a1I3amc']
-  };
-  var media = {
-    mimeType: 'image/jpeg',
-    body: fs.createReadStream('C:/Users/Alister/Pictures/black.jpg')
-  };
-  drive.files.create({
-    resource: fileMetadata,
-    media: media,
-    fields: 'id'
-  }, function (err, file) {
-    if (err) {
-      // Handle error
-      console.error(err);
-    } else {
-      console.log('File Id: ', file.id);
-      res.send('success');
-    }
   });
 });
 
@@ -217,6 +182,44 @@ app.post('/upload', (req, res) => {
       res.send('success');
     }
   });
+});
+
+app.post('/list', (req, res) => {
+  var pageToken = null;
+  var fileMetadata =({
+    q: "mimeType='application/vnd.google-apps.folder' and '1zv2Ct9Hg68rkmmI--mflkLQGGoRshove' in parents",
+    fields: 'nextPageToken, files(id, name)',
+    spaces: 'drive',
+    pageToken: pageToken
+  })
+
+  const drive = google.drive({ version: 'v3', auth });
+  // Using the NPM module 'async'
+  async.doWhilst(function (callback) {
+    drive.files.list(fileMetadata , function (err, res) {
+      if (err) {
+        // Handle error
+        console.error(err);
+        callback(err)
+      } else {
+        // console.log(res.data.files)
+        res.data.files.forEach(function (file) {
+          console.log('Found file: ', file.name);
+        });
+        pageToken = res.nextPageToken;
+        callback();
+      }
+    });
+  }, function () {
+    return !!pageToken;
+  }, function (err) {
+    if (err) {
+      // Handle error
+      console.error(err);
+    } else {
+      // All pages fetched
+    }
+  })
 });
 
 const PORT = process.env.PORT || 5000;
