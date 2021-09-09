@@ -23,13 +23,13 @@ export default function Dashboard() {
   }
 
   const inputFile = useRef(null)
+  const [fileArray, setFileArray] = useState(null)
   const [file, setFile] = useState(null)
-  const [filename, setFilename] = useState('')
   const [showFileUploadSuccess, setShowFileUploadSuccess] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    if (file !== null) {
+    if (fileArray !== null) {
       onFileSubmit();
     }
   });
@@ -69,29 +69,24 @@ export default function Dashboard() {
   }
 
   async function onFileSubmit() {
-      const formData = new FormData();
-      if (queriedFolder === null || queriedFolder.length === 0) {
-        setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
-        setShowFileUploadError(true);
-        setFile(null);
-        return;
-      } else {
-        formData.append('file', file);
+    if (queriedFolder === null || queriedFolder.length === 0) {
+      setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
+      setShowFileUploadError(true);
+      setFileArray(null);
+      setFile(null);
+      return;
+    } else {
+      for (var i = 0; i < fileArray.length; i++) {
+        const formData = new FormData();
+        formData.append('file', fileArray[i]);
         formData.append('id', queriedFolder[0].id);
-    
+  
         try {
-          await axios.post(baseURL + '/upload', formData, {
+          axios.post(baseURL + '/upload', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           });
-        
-          setShowFileUploadError(false);
-          setFile(null);
-          setMessage('Successfully uploaded ' + filename);
-          setFilename('');
-          setShowFileUploadSuccess(true);
-    
         } catch (err) {
           if (err.response.status === 500) {
             // setMessage('There was a problem with the server');
@@ -99,13 +94,19 @@ export default function Dashboard() {
             // setMessage(err.response.data.msg);
           }
         }
+      }
+      setShowFileUploadError(false);
+      setMessage('Successfully uploaded ' + fileArray.length + ' files');
+      setFile(null);
+      setFileArray(null);
+      setShowFileUploadSuccess(true);
+      
     }
   };
 
-  function onChange(e) {
+  async function onChange(e) {
     if (e.target.files[0] != null) {
-      setFile(e.target.files[0]);
-      setFilename(e.target.files[0].name);
+      await setFileArray(e.target.files);
     }
     e.target.value = null; // reset onChange
   };
@@ -172,7 +173,7 @@ export default function Dashboard() {
           </Col>
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
-            <input type='file'onChange={onChange} ref={inputFile} style={{display: 'none'}}/>
+            <input type='file'onChange={onChange} ref={inputFile} style={{display: 'none'}} multiple/>
             <Button className="w-50" variant="outline-dark" onClick={onButtonClick}>SAVED RECEIVED DOCUMENTS</Button>
             
             <Button className="w-50" variant="outline-dark" type="submit" onClick={createFolder}>ISSUE SY DOCUMENT</Button>

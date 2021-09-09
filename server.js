@@ -158,30 +158,28 @@ app.post('/upload', (req, res) => {
 
   const file = req.files.file;
   const parentId = req.body.id;
+  console.log(file.name);
 
   const drive = google.drive({ version: 'v3', auth });
-  
-  var fileMetadata = {
-    name: file.name,
-    parents: [parentId]
-  };
-  var media = {
-    mimeType: file.mimeType,
-    body: fs.createReadStream(file.tempFilePath)
-  };
-  drive.files.create({
-    resource: fileMetadata,
-    media: media,
-    fields: 'id'
-  }, function (err, file) {
-    if (err) {
-      // Handle error
-      console.error(err);
-    } else {
-      console.log('File Id: ', file.id);
-      res.send('success');
-    }
-  });
+    
+    var fileMetadata = {
+      name: file.name,
+      parents: [parentId]
+    };
+    var media = {
+      mimeType: file.mimeType,
+      body: fs.createReadStream(file.tempFilePath)
+    };
+    drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: 'id'
+    }, function (err, file) {
+      if (err) {
+        // Handle error
+        console.error(err);
+      }
+    });
 });
 
 app.post('/list', (req, res) => {
