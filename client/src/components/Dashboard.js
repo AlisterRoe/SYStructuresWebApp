@@ -3,6 +3,7 @@ import { Alert, Navbar, Container, Nav, Row, Col, Card, Form, Button } from 'rea
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
+import moment from 'moment'
 
 export default function Dashboard() {
   const baseURL = "http://localhost:5000";
@@ -24,7 +25,7 @@ export default function Dashboard() {
 
   const inputFile = useRef(null)
   const [fileArray, setFileArray] = useState(null)
-  const [file, setFile] = useState(null)
+  // const [file, setFile] = useState(null)
   const [showFileUploadSuccess, setShowFileUploadSuccess] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -34,9 +35,9 @@ export default function Dashboard() {
     }
   });
 
-  const [queriedFolder, setQueriedFolder] = useState(null);
+  const [queriedJobFolder, setQueriedJobFolder] = useState(null);
 
-  function getID(name) {
+  function getJobID(name) {
     axios
       .post(baseURL+'/getFolder', {
         q: "mimeType='application/vnd.google-apps.folder' and name='" + name + "'", 
@@ -44,18 +45,50 @@ export default function Dashboard() {
         fields: 'files(name,id)'
       })
       .then((response) => {
-        const myQueriedFolder = response.data;
-        setQueriedFolder(myQueriedFolder);
+        const myQueriedJobFolder = response.data;
+        setQueriedJobFolder(myQueriedJobFolder);
       });
   }
 
+  const [queriedSubFolder, setQueriedSubFolder] = useState(null);
+
+  function getSubFolderID(name) {
+    if (queriedJobFolder === null || queriedJobFolder.length === 0) {
+      setFileUploadError("No job selected. Please select a job before attempting to upload files.");
+      setShowFileUploadError(true);
+      setFileArray(null);
+      // setFile(null);
+      return;
+    } else {
+      axios
+        .post(baseURL+'/getFolder', {
+          q: "mimeType='application/vnd.google-apps.folder' and name='" + name + "' and '" + queriedJobFolder[0].id + "' in parents", 
+          // q: "mimeType='application/vnd.google-apps.folder' and name='" + String + "' and '1zv2Ct9Hg68rkmmI--mflkLQGGoRshove' in parents", 
+          fields: 'files(name,id)'
+        })
+        .then((response) => {
+          const myQueriedSubFolder = response.data;
+          setQueriedSubFolder(myQueriedSubFolder);
+        });
+    }
+  }
+
   function createFolder() {
-    axios
-      .post(baseURL+'/uploadAFolder', {
-        name: 'Test Node',
-        parents: ['0B3sWiBPjF4DfNWJJaFU0a1I3amc'],
-        mimeType: 'application/vnd.google-apps.folder'
-      })
+    if (queriedSubFolder === null || queriedSubFolder.length === 0) {
+      setFileUploadError("No subfolder selected. Please select a job before attempting to upload files.");
+      setShowFileUploadError(true);
+      setFileArray(null);
+      // setFile(null);
+      return;
+    } else {
+      var date = moment().format("DD MMMM YYYY").toLocaleString();
+      axios
+        .post(baseURL+'/uploadAFolder', {
+          name: date,
+          parents: [queriedSubFolder[0].id],
+          mimeType: 'application/vnd.google-apps.folder'
+        })
+    }
   }
   
   const jobNumberRef = useRef()
@@ -65,24 +98,24 @@ export default function Dashboard() {
   function handleSubmit(e) {
     e.preventDefault()
     
-    getID(jobNumberRef.current.value)
+    getJobID(jobNumberRef.current.value)
   }
 
   async function onFileSubmit() {
-    if (queriedFolder === null || queriedFolder.length === 0) {
+    if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
       setShowFileUploadError(true);
       setFileArray(null);
-      setFile(null);
+      // setFile(null);
       return;
     } else {
       for (var i = 0; i < fileArray.length; i++) {
         const formData = new FormData();
         formData.append('file', fileArray[i]);
-        formData.append('id', queriedFolder[0].id);
+        formData.append('id', queriedJobFolder[0].id);
   
         try {
-          axios.post(baseURL + '/upload', formData, {
+          axios.post(baseURL + '/uploadMultipleFiles', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
@@ -97,12 +130,38 @@ export default function Dashboard() {
       }
       setShowFileUploadError(false);
       setMessage('Successfully uploaded ' + fileArray.length + ' files');
-      setFile(null);
+      // setFile(null);
       setFileArray(null);
       setShowFileUploadSuccess(true);
       
     }
   };
+  
+  const [queriedChildrenList, setQueriedChildrenList] = useState(null);
+
+  function getSubFolderChildrenList() {
+    if (queriedSubFolder === null || queriedSubFolder.length === 0) {
+      setFileUploadError("No subfolder selected. Please select a job before attempting to upload files.");
+      setShowFileUploadError(true);
+      setFileArray(null);
+      // setFile(null);
+      return;
+    } else {
+      var pageToken = null;
+    
+      axios
+        .post(baseURL+'/listChildrenFolders', {
+          q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolder[0].id + "' in parents",
+          fields: 'nextPageToken, files(id, name)',
+          spaces: 'drive',
+          pageToken: pageToken
+        })
+        .then((response) => {
+          const myQueriedChildrenList = response.data;
+          setQueriedChildrenList(myQueriedChildrenList);
+        });
+      }
+  }
 
   async function onChange(e) {
     if (e.target.files[0] != null) {
@@ -163,7 +222,7 @@ export default function Dashboard() {
                     </Form.Group>
                   </Container>
                   <Container className="text-center">
-                    <div>CURRENT JOB</div> {queriedFolder === null || queriedFolder.length === 0 ? 'No Job Selected' : queriedFolder[0].id}
+                    <div>CURRENT JOB</div> {queriedJobFolder === null || queriedJobFolder.length === 0 ? 'No Job Selected' : queriedJobFolder[0].id}
                     <Button className="w-100 mt-5" variant="outline-dark" type="submit">SELECT</Button>
                   </Container>
                 </Form>
@@ -173,10 +232,10 @@ export default function Dashboard() {
           </Col>
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
-            <input type='file'onChange={onChange} ref={inputFile} style={{display: 'none'}} multiple/>
-            <Button className="w-50" variant="outline-dark" onClick={onButtonClick}>SAVED RECEIVED DOCUMENTS</Button>
+            <input type='file' onChange={onChange} ref={inputFile} style={{display: 'none'}} multiple/>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClick()}}>SAVED RECEIVED DOCUMENTS</Button>
             
-            <Button className="w-50" variant="outline-dark" type="submit" onClick={createFolder}>ISSUE SY DOCUMENT</Button>
+            <Button className="w-50" variant="outline-dark" type="submit" onClick={() => {createFolder()}}>ISSUE SY DOCUMENT</Button>
           </Col>
           <Col xs={3} className="d-flex align-items-center justify-content-center">
             <Card className="w-75 h-75">
@@ -195,8 +254,10 @@ export default function Dashboard() {
               <h5>ADMIN DOCUMENTS</h5>
             </Container>
             <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-              <Button className="w-100" variant="outline-dark" type="submit">FEE PROPOSAL</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">FEE VARIATION</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" onClick={() => {getSubFolderID('Photos')}}>FEE PROPOSAL</Button>
+              {queriedSubFolder === null || queriedSubFolder.length === 0 ? 'No Queried Sub Folder Folder' : queriedSubFolder[0].id}
+              <Button className="w-100" variant="outline-dark" type="submit" onClick={() => {getSubFolderChildrenList()}}>FEE VARIATION</Button>
+              {queriedChildrenList === null || queriedChildrenList.length === 0 ? 'No Queried Children List' : queriedChildrenList.files[0].name}
               <Button className="w-100" variant="outline-dark" type="submit">LETTER</Button>
               <Button className="w-100" variant="outline-dark" type="submit">REPORT</Button>
             </Container>

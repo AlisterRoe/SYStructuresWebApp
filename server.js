@@ -151,7 +151,7 @@ app.post('/getFolder', (req, res) => {
   });
 });
 
-app.post('/upload', (req, res) => {
+app.post('/uploadMultipleFiles', (req, res) => {
   if (req.files === null) {
     return res.status(400).json({ msg: 'No file uploaded' });
   }
@@ -182,31 +182,26 @@ app.post('/upload', (req, res) => {
     });
 });
 
-app.post('/list', (req, res) => {
-  var pageToken = null;
-  var fileMetadata =({
-    q: "mimeType='application/vnd.google-apps.folder' and '1zv2Ct9Hg68rkmmI--mflkLQGGoRshove' in parents",
-    fields: 'nextPageToken, files(id, name)',
-    spaces: 'drive',
-    pageToken: pageToken
-  })
+app.post('/listChildrenFolders', (req, res) => {
+  var fileMetadata = req.body
 
   const drive = google.drive({ version: 'v3', auth });
   // Using the NPM module 'async'
   async.doWhilst(function (callback) {
-    drive.files.list(fileMetadata , function (err, res) {
+    drive.files.list(fileMetadata,
+    (err, response) => {
       if (err) {
         // Handle error
         console.error(err);
         callback(err)
       } else {
-        // console.log(res.data.files)
-        res.data.files.forEach(function (file) {
+        response.data.files.forEach(function (file) {
           console.log('Found file: ', file.name);
         });
         pageToken = res.nextPageToken;
         callback();
       }
+      res.send(response.data)
     });
   }, function () {
     return !!pageToken;
