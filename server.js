@@ -101,7 +101,7 @@ app.post('/uploadAFolder', (req, res) => {
     {
       resource: fileMetadata
     },
-    async (err, file) => {
+    async (err, response) => {
       if (err) {
         // Handle error
         console.error(err.msg);
@@ -111,10 +111,12 @@ app.post('/uploadAFolder', (req, res) => {
           .json({ errors: [{ msg: 'Server Error try again later' }] });
       } else {
         // if file upload success then return the unique google drive id
-        res.status(200).json({
-          fileID: file.data.id,
-        });
+        console.log(response.data);
+        // res.status(200).json({
+        //   fileID: response.data.id,
+        // });
       }
+      res.send(response.data)
     }
   );
 });

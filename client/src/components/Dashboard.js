@@ -72,8 +72,10 @@ export default function Dashboard() {
         });
     }
   }
+  
+  const [createdUploadFolder, setCreatedUploadFolder] = useState(null);
 
-  function createFolder() {
+  async function createFolder() {
     if (queriedSubFolder === null || queriedSubFolder.length === 0) {
       setFileUploadError("No subfolder selected. Please select a job before attempting to upload files.");
       setShowFileUploadError(true);
@@ -82,12 +84,22 @@ export default function Dashboard() {
       return;
     } else {
       var date = moment().format("DD MMMM YYYY").toLocaleString();
+      var latestFile = queriedChildrenList.files[0].name.toString();
+      var fileNumber = Number(latestFile.substring(0, 2));
+      fileNumber++;
+      if (fileNumber.toString().length === 1) {
+        fileNumber = '0' + fileNumber;
+      }
+      var name = fileNumber + ' - ' + date;
       axios
         .post(baseURL+'/uploadAFolder', {
-          name: date,
+          name: name,
           parents: [queriedSubFolder[0].id],
           mimeType: 'application/vnd.google-apps.folder'
         })
+        .then((response) => {
+          setCreatedUploadFolder(response.data.id);
+        });
     }
   }
   
@@ -112,7 +124,7 @@ export default function Dashboard() {
       for (var i = 0; i < fileArray.length; i++) {
         const formData = new FormData();
         formData.append('file', fileArray[i]);
-        formData.append('id', queriedJobFolder[0].id);
+        formData.append('id', createdUploadFolder);
   
         try {
           axios.post(baseURL + '/uploadMultipleFiles', formData, {
@@ -250,6 +262,16 @@ export default function Dashboard() {
         </Row>
         <Row style={{ height: "34vh" }}>
           <Col>
+            <Container className="text-center" style={{ height: "10%" }}>
+              <h5>SAVE RECEIVED DOCUMENTS</h5>
+            </Container>
+            <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
+              <Button className="w-100" variant="outline-dark" type="submit">DRAWINGS/DOCUMENTS (CAD)</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">PHOTOS (PHOTOS)</Button>
+              <Button className="w-100" variant="outline-dark" type="submit">SHOP DRAWINGS (SHOP DRAWINGS)</Button>
+            </Container>
+          </Col>
+          <Col>
             <Container className="text-center" style={{ height: "10%"}}>
               <h5>ADMIN DOCUMENTS</h5>
             </Container>
@@ -282,6 +304,8 @@ export default function Dashboard() {
               <Button className="w-100" variant="outline-dark" type="submit">CALCULATION DOCUMENT</Button>
             </Container>
           </Col>
+        </Row>
+        <Row style={{ height: "34vh" }}>
           <Col>
             <Container className="text-center" style={{ height: "10%" }}>
               <h5>CONSTRUCTION</h5>
@@ -293,8 +317,6 @@ export default function Dashboard() {
               <Button className="w-100" variant="outline-dark" type="submit">CERTIFICATION LETTER</Button>
             </Container>
           </Col>
-        </Row>
-        <Row style={{ height: "34vh" }}>
           <Col>
             <Container className="text-center" style={{ height: "10%" }}>
               <h5>QA</h5>
@@ -306,7 +328,6 @@ export default function Dashboard() {
               <Button className="w-100" variant="outline-dark" type="submit">VERIFY SAFETY IN DESIGN</Button>
             </Container>
           </Col>
-          <Col></Col>
           <Col></Col>
           <Col></Col>
         </Row>
