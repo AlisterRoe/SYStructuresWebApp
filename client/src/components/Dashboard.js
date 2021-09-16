@@ -28,12 +28,15 @@ export default function Dashboard() {
   // const [file, setFile] = useState(null)
   const [showFileUploadSuccess, setShowFileUploadSuccess] = useState(false)
   const [message, setMessage] = useState('')
+  const [receivedSubFolder, setReceivedSubFolder] = useState('')
 
   useEffect(() => {
-    if (fileArray !== null) {
-      onFileSubmit();
+    if (fileArray !== null && receivedSubFolder !== '') {
+      saveReceivedDoc(receivedSubFolder);
+      setFileArray(null);
+      setReceivedSubFolder('');
     }
-  });
+  },[fileArray, receivedSubFolder]);
 
   const [queriedJobFolder, setQueriedJobFolder] = useState(null);
 
@@ -52,7 +55,7 @@ export default function Dashboard() {
 
   const [queriedSubFolder, setQueriedSubFolder] = useState(null);
 
-  function getSubFolderID(name) {
+  async function getSubFolderID(name) {
     if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload files.");
       setShowFileUploadError(true);
@@ -60,16 +63,16 @@ export default function Dashboard() {
       // setFile(null);
       return;
     } else {
-      axios
+      await axios
         .post(baseURL+'/getFolder', {
           q: "mimeType='application/vnd.google-apps.folder' and name='" + name + "' and '" + queriedJobFolder[0].id + "' in parents", 
           // q: "mimeType='application/vnd.google-apps.folder' and name='" + String + "' and '1zv2Ct9Hg68rkmmI--mflkLQGGoRshove' in parents", 
           fields: 'files(name,id)'
         })
         .then((response) => {
-          const myQueriedSubFolder = response.data;
-          setQueriedSubFolder(myQueriedSubFolder);
+          setQueriedSubFolder(response.data);
         });
+        // console.log('End getSubFolderID ' + queriedSubFolder)
     }
   }
   
@@ -91,7 +94,7 @@ export default function Dashboard() {
         fileNumber = '0' + fileNumber;
       }
       var name = fileNumber + ' - ' + date;
-      axios
+      await axios
         .post(baseURL+'/uploadAFolder', {
           name: name,
           parents: [queriedSubFolder[0].id],
@@ -99,6 +102,7 @@ export default function Dashboard() {
         })
         .then((response) => {
           setCreatedUploadFolder(response.data.id);
+          // console.log('End createFolder ' + createdUploadFolder)
         });
     }
   }
@@ -151,7 +155,7 @@ export default function Dashboard() {
   
   const [queriedChildrenList, setQueriedChildrenList] = useState(null);
 
-  function getSubFolderChildrenList() {
+  async function getSubFolderChildrenList() {
     if (queriedSubFolder === null || queriedSubFolder.length === 0) {
       setFileUploadError("No subfolder selected. Please select a job before attempting to upload files.");
       setShowFileUploadError(true);
@@ -161,7 +165,7 @@ export default function Dashboard() {
     } else {
       var pageToken = null;
     
-      axios
+      await axios
         .post(baseURL+'/listChildrenFolders', {
           q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolder[0].id + "' in parents",
           fields: 'nextPageToken, files(id, name)',
@@ -171,19 +175,110 @@ export default function Dashboard() {
         .then((response) => {
           const myQueriedChildrenList = response.data;
           setQueriedChildrenList(myQueriedChildrenList);
+          // console.log('End getSubFolderChildrenList ' + queriedChildrenList)
         });
+    }
+  }
+
+  async function saveReceivedDoc(subFolder) {
+    if (queriedJobFolder === null || queriedJobFolder.length === 0) {
+      setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
+      setShowFileUploadError(true);
+      setFileArray(null);
+      // setFile(null);
+      return;
+    } else {
+      var createdUploadFolderFunc = null;
+      var queriedChildrenListFunc = null;
+      var queriedSubFolderFunc = null;
+      var pageToken = null;
+      
+      await axios
+        .post(baseURL+'/getFolder', {
+          q: "mimeType='application/vnd.google-apps.folder' and name='" + subFolder + "' and '" + queriedJobFolder[0].id + "' in parents", 
+          // q: "mimeType='application/vnd.google-apps.folder' and name='" + String + "' and '1zv2Ct9Hg68rkmmI--mflkLQGGoRshove' in parents", 
+          fields: 'files(name,id)'
+        })
+        .then((response) => {
+          queriedSubFolderFunc = response.data;
+          console.log('End getSubFolderID ' + queriedSubFolderFunc[0].id)
+        });
+
+      await axios
+        .post(baseURL+'/listChildrenFolders', {
+          q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolderFunc[0].id + "' in parents",
+          fields: 'nextPageToken, files(id, name)',
+          spaces: 'drive',
+          pageToken: pageToken
+        })
+        .then((response) => {
+          queriedChildrenListFunc = response.data;
+          console.log('End getSubFolderChildrenList ' + queriedChildrenListFunc.files[0].name)
+        });
+      
+      var date = await moment().format("DD MMMM YYYY").toLocaleString();
+      var latestFile = await queriedChildrenListFunc.files[0].name.toString();
+      var fileNumber = await Number(latestFile.substring(0, 2));
+      await fileNumber++;
+      if (fileNumber.toString().length === 1) {
+        fileNumber = await '0' + fileNumber;
       }
+      var name = await fileNumber + ' - ' + date;
+      await axios
+        .post(baseURL+'/uploadAFolder', {
+          name: name,
+          parents: [queriedSubFolderFunc[0].id],
+          mimeType: 'application/vnd.google-apps.folder'
+        })
+        .then((response) => {
+          createdUploadFolderFunc = response.data.id;
+          console.log('End createFolder ' + createdUploadFolderFunc)
+        });
+
+      console.log(fileArray);
+
+      for (var i = 0; i < fileArray.length; i++) {
+        const formData = new FormData();
+        formData.append('file', fileArray[i]);
+        formData.append('id', createdUploadFolderFunc);
+  
+        try {
+          axios.post(baseURL + '/uploadMultipleFiles', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        } catch (err) {
+          if (err.response.status === 500) {
+            // setMessage('There was a problem with the server');
+          } else {
+            // setMessage(err.response.data.msg);
+          }
+        }
+      }
+      setShowFileUploadError(false);
+      setMessage('Successfully uploaded ' + fileArray.length + ' files');
+      // setFile(null);
+      setFileArray(null);
+      setShowFileUploadSuccess(true);
+      createdUploadFolderFunc = null;
+      queriedChildrenListFunc = null;
+      queriedSubFolderFunc = null;
+      
+    }
+
   }
 
   async function onChange(e) {
     if (e.target.files[0] != null) {
       await setFileArray(e.target.files);
+      console.log('File array ' + fileArray);
     }
-    e.target.value = null; // reset onChange
+    // e.target.value = null; // reset onChange
   };
 
-  const onButtonClick = () => {
-   inputFile.current.click();
+  function onButtonClick() {
+    inputFile.current.click();
   };
 
   return (
@@ -245,7 +340,7 @@ export default function Dashboard() {
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
             <input type='file' onChange={onChange} ref={inputFile} style={{display: 'none'}} multiple/>
-            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClick()}}>SAVED RECEIVED DOCUMENTS</Button>
+            <Button className="w-50" variant="outline-dark" onClick={() => {setReceivedSubFolder('Shop Drawings'); onButtonClick()}}>SAVED RECEIVED DOCUMENTS</Button>
             
             <Button className="w-50" variant="outline-dark" type="submit" onClick={() => {createFolder()}}>ISSUE SY DOCUMENT</Button>
           </Col>
