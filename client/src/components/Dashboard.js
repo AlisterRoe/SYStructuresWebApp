@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
 import { savedReceivedDocAPI } from '../functions/HelperFunctions'
+import { RemarkModal } from './RemarkModal'
 
 export default function Dashboard() {
   const baseURL = "http://localhost:5000";
@@ -83,9 +84,14 @@ export default function Dashboard() {
   function onButtonClick() {
     saveReceivedDocInput.current.click();
   };
+  
+  const [showRemarkModal, setShowRemarkModal] = useState(false);
+  const handleCloseRemarkModal = () => setShowRemarkModal(false);
+  const handleShowRemarkModal = () => setShowRemarkModal(true);
 
   return (
     <>
+    <RemarkModal show={showRemarkModal} onHide={handleCloseRemarkModal}/>
       <Navbar className="navbar-dark bg-dark" style={{ minHeight: "7vh" }}>
         <Container style={{ minWidth: "90vw" }}>
           <Navbar.Brand>SY STRUCTURES</Navbar.Brand>
@@ -145,7 +151,7 @@ export default function Dashboard() {
             {/* <input type='file' onChange={onChange} ref={saveReceivedDocInput} style={{display: 'none'}} multiple/> */}
             {/* <Button className="w-50" variant="outline-dark" onClick={() => {setReceivedSubFolder('CAD'); onButtonClick()}}>SAVED RECEIVED DOCUMENTS</Button> */}
             
-            <Button className="w-50" variant="outline-dark" type="submit" onClick={() => {}}>ISSUE SY DOCUMENT</Button>
+            <Button className="w-50" variant="outline-dark" type="submit" onClick={() => {handleShowRemarkModal()}}>ISSUE SY DOCUMENT</Button>
           </Col>
           <Col xs={3} className="d-flex align-items-center justify-content-center">
             <Card className="w-75 h-75">
