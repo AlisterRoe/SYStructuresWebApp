@@ -153,7 +153,7 @@ app.post('/getFolder', (req, res) => {
   });
 });
 
-app.post('/uploadMultipleFiles', (req, res) => {
+app.post('/uploadFile', (req, res) => {
   if (req.files === null) {
     return res.status(400).json({ msg: 'No file uploaded' });
   }
