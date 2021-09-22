@@ -3,10 +3,10 @@ import moment from 'moment'
 
 const baseURL = "http://localhost:5000";
 
-export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArrayFunc) {
-    var createdUploadFolderFunc = null;
-    var queriedChildrenListFunc = null;
-    var queriedSubFolderFunc = null;
+export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray) {
+    var createdUploadFolder = null;
+    var queriedChildrenList = null;
+    var queriedSubFolder = null;
     var pageToken = null;
 
     await axios
@@ -15,59 +15,64 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
           fields: 'files(name,id)'
         })
         .then((response) => {
-          queriedSubFolderFunc = response.data;
-        //   console.log('End getSubFolderID ' + queriedSubFolderFunc[0].id)
+          queriedSubFolder = response.data;
+        //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
         });
 
     if (subFolder === 'CAD') {
         await axios
         .post(baseURL+'/getFolder', {
-            q: "mimeType='application/vnd.google-apps.folder' and name='Received' and '" + queriedSubFolderFunc[0].id + "' in parents",
+            q: "mimeType='application/vnd.google-apps.folder' and name='Received' and '" + queriedSubFolder[0].id + "' in parents",
             fields: 'files(name,id)'
         })
         .then((response) => {
-            queriedSubFolderFunc = response.data;
-            // console.log('End getSubFolderID ' + queriedSubFolderFunc[0].id)
+            queriedSubFolder = response.data;
+            // console.log('End getSubFolderID ' + queriedSubFolder[0].id)
         });
     }
 
     await axios
     .post(baseURL+'/listChildrenFolders', {
-        q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolderFunc[0].id + "' in parents",
+        q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolder[0].id + "' in parents",
         fields: 'nextPageToken, files(id, name)',
         spaces: 'drive',
         pageToken: pageToken
     })
     .then((response) => {
-        queriedChildrenListFunc = response.data;
-        // console.log('End getSubFolderChildrenList ' + queriedChildrenListFunc.files[0].name)
+        queriedChildrenList = response.data;
+        // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
     });
-      
+    
+    if (queriedChildrenList.files.length === 0) {
+        console.log('No folders');
+        var latestFile = '00';
+    } else {
+        var latestFile = await queriedChildrenList.files[0].name.toString();
+    }
     var date = await moment().format("DD MMMM YYYY").toLocaleString();
-    var latestFile = await queriedChildrenListFunc.files[0].name.toString();
     var fileNumber = await Number(latestFile.substring(0, 2));
     await fileNumber++;
     if (fileNumber.toString().length === 1) {
-    fileNumber = await '0' + fileNumber;
+        fileNumber = await '0' + fileNumber;
     }
     var name = await fileNumber + ' - ' + date;
     await axios
     .post(baseURL+'/createFolder', {
         name: name,
-        parents: [queriedSubFolderFunc[0].id],
+        parents: [queriedSubFolder[0].id],
         mimeType: 'application/vnd.google-apps.folder'
     })
     .then((response) => {
-        createdUploadFolderFunc = response.data.id;
-        // console.log('End createFolder ' + createdUploadFolderFunc)
+        createdUploadFolder = response.data.id;
+        // console.log('End createFolder ' + createdUploadFolder)
     });
 
-    // console.log(fileArrayFunc);
+    // console.log(fileArray);
 
-    for (var i = 0; i < fileArrayFunc.length; i++) {
+    for (var i = 0; i < fileArray.length; i++) {
         const formData = new FormData();
-        formData.append('file', fileArrayFunc[i]);
-        formData.append('id', createdUploadFolderFunc);
+        formData.append('file', fileArray[i]);
+        formData.append('id', createdUploadFolder);
 
         try {
             axios.post(baseURL + '/uploadFile', formData, {
@@ -83,5 +88,5 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
             }
         }
     }
-    return [createdUploadFolderFunc, name];
+    return [createdUploadFolder, name];
 }
