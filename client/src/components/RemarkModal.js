@@ -1,14 +1,25 @@
 import React, { Component } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Modal, Button, Form, Container} from 'react-bootstrap';
+import axios from 'axios'
 
 
 export class RemarkModal extends Component {
 
-    handleSubmit(e) {
+    async handleSubmit(e, fileID, originalName) {
         e.preventDefault();
-
-        console.log(e.target.Remark.value);
+        if (e.target.Remark.value !== '') { 
+            await this.renameID(fileID, originalName, e.target.Remark.value);
+        }
+        e.target.value = null; // reset on submit
+    }
+    
+    renameID(fileID, originalName, remark) {
+        axios
+          .post('http://localhost:5000/renameID', {
+            name: originalName + " - " + remark,
+            fileId: fileID
+        })
     }
 
     render() {
@@ -17,12 +28,12 @@ export class RemarkModal extends Component {
                 <Modal.Header>
                 <Modal.Title>Add remark/description for uploaded files</Modal.Title>
                 </Modal.Header>
-                <Form onSubmit={this.handleSubmit}>
+                <Form onSubmit={(e) => { this.handleSubmit(e, this.props.remarkdata[0], this.props.remarkdata[1]) }}>
                     <Modal.Body>
                         <Container>
                             <Form.Group className="mb-2" id="job-number">
                                 <Form.Label className="mb-0">REMARK/DESCRIPTION</Form.Label>
-                                <Form.Control type="text" name="Remark" placeholder="Remark goes here" required />
+                                <Form.Control type="text" name="Remark" placeholder="Remark goes here"/>
                             </Form.Group>
                         </Container>
                     </Modal.Body>
@@ -30,7 +41,7 @@ export class RemarkModal extends Component {
                     <Button variant="secondary" onClick={this.props.onHide}>
                         No Remark
                     </Button>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" onClick={this.props.onHide}>
                         Add Remark
                     </Button>
                     </Modal.Footer>

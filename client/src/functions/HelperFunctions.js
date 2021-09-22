@@ -52,7 +52,7 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
     }
     var name = await fileNumber + ' - ' + date;
     await axios
-    .post(baseURL+'/uploadAFolder', {
+    .post(baseURL+'/createFolder', {
         name: name,
         parents: [queriedSubFolderFunc[0].id],
         mimeType: 'application/vnd.google-apps.folder'
@@ -83,4 +83,5 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
             }
         }
     }
+    return [createdUploadFolderFunc, name];
 }

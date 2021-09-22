@@ -83,7 +83,7 @@ function getAccessToken(oAuth2Client) {
   });
 }
 
-app.post('/uploadAFolder', (req, res) => {
+app.post('/createFolder', (req, res) => {
   var fileMetadata = req.body
   // console.log(fileMetadata)
   // fileMetadata = {
@@ -215,6 +215,23 @@ app.post('/listChildrenFolders', (req, res) => {
       // All pages fetched
     }
   })
+});
+
+app.post('/renameID', function (req) {
+  var fileMetadata = req.body
+  
+  // Authenticating drive API
+  const drive = google.drive({ version: 'v3', auth });
+  var body = {'name': fileMetadata.name};
+  drive.files.update({
+    fileId: fileMetadata.fileId,
+    resource: body,
+  }, (err) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    else {
+      console.log('The name of the file has been updated!');
+    }
+  });
 });
 
 const PORT = process.env.PORT || 5000;

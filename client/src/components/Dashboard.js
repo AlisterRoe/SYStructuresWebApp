@@ -46,13 +46,16 @@ export default function Dashboard() {
   const [showFileUploadError, setShowFileUploadError] = useState(false)
   const [showFileUploadSuccess, setShowFileUploadSuccess] = useState(false)
 
+  const [remarkData, setRemarkData] = useState('');
+
   async function saveReceivedDoc(subFolder, fileArrayFunc) {
     if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
       setShowFileUploadError(true);
       return;
     } else {
-      await savedReceivedDocAPI(queriedJobFolder, subFolder, fileArrayFunc);
+      await setRemarkData(await savedReceivedDocAPI(queriedJobFolder, subFolder, fileArrayFunc));
+      await handleShowRemarkModal();
       
       await setShowFileUploadError(false);
       await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
@@ -91,7 +94,7 @@ export default function Dashboard() {
 
   return (
     <>
-    <RemarkModal show={showRemarkModal} onHide={handleCloseRemarkModal}/>
+    <RemarkModal show={showRemarkModal} onHide={handleCloseRemarkModal} remarkdata={remarkData}/>
       <Navbar className="navbar-dark bg-dark" style={{ minHeight: "7vh" }}>
         <Container style={{ minWidth: "90vw" }}>
           <Navbar.Brand>SY STRUCTURES</Navbar.Brand>
