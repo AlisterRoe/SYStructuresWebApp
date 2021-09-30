@@ -11,7 +11,7 @@ export class RemarkModal extends Component {
         if (e.target.Remark.value !== '') { 
             await this.renameID(fileID, originalName, e.target.Remark.value);
         }
-        e.target.value = null; // reset on submit
+        e.target.Remark.value = await null; // reset on submit
     }
     
     renameID(fileID, originalName, remark) {

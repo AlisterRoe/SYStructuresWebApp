@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { google } = require('googleapis');
 const fs = require("fs");
-const formidable = require('formidable');
 const credentials = require('./credentials.json');
 const readline = require('readline');
 const fileUpload = require('express-fileupload');
@@ -160,7 +159,6 @@ app.post('/uploadFile', (req, res) => {
 
   const file = req.files.file;
   const parentId = req.body.id;
-  console.log(file.name);
 
   const drive = google.drive({ version: 'v3', auth });
     
@@ -176,10 +174,14 @@ app.post('/uploadFile', (req, res) => {
       resource: fileMetadata,
       media: media,
       fields: 'id'
-    }, function (err, file) {
+    }, function (err, response) {
       if (err) {
         // Handle error
         console.error(err);
+      } else {
+        const files = response.data.files;
+        console.log("Uploaded " + file.name)
+        res.send(files)
       }
     });
 });
@@ -217,7 +219,7 @@ app.post('/listChildrenFolders', (req, res) => {
   })
 });
 
-app.post('/renameID', function (req) {
+app.post('/renameID', function (req, res) {
   var fileMetadata = req.body
   
   // Authenticating drive API
@@ -226,10 +228,14 @@ app.post('/renameID', function (req) {
   drive.files.update({
     fileId: fileMetadata.fileId,
     resource: body,
-  }, (err) => {
-    if (err) return console.log('The API returned an error: ' + err);
+  }, (err, response) => {
+    if (err) {
+      return console.log('The API returned an error: ' + err);
+    }
     else {
+      const files = response.data.files;
       console.log('The name of the file has been updated!');
+      res.send(files)
     }
   });
 });

@@ -4,9 +4,9 @@ import moment from 'moment'
 const baseURL = "http://localhost:5000";
 
 export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray) {
-    var createdUploadFolder = null;
-    var queriedChildrenList = null;
     var queriedSubFolder = null;
+    var queriedChildrenList = null;
+    var createdUploadFolder = null;
     var pageToken = null;
 
     await axios
@@ -43,11 +43,12 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
         // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
     });
     
+    var latestFile = '';
     if (queriedChildrenList.files.length === 0) {
         console.log('No folders');
-        var latestFile = '00';
+        latestFile = '00';
     } else {
-        var latestFile = await queriedChildrenList.files[0].name.toString();
+        latestFile = await queriedChildrenList.files[0].name.toString();
     }
     var date = await moment().format("DD MMMM YYYY").toLocaleString();
     var fileNumber = await Number(latestFile.substring(0, 2));
@@ -67,12 +68,10 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
         // console.log('End createFolder ' + createdUploadFolder)
     });
 
-    // console.log(fileArray);
-
     for (var i = 0; i < fileArray.length; i++) {
         const formData = new FormData();
-        formData.append('file', fileArray[i]);
-        formData.append('id', createdUploadFolder);
+        await formData.append('file', fileArray[i]);
+        await formData.append('id', createdUploadFolder);
 
         try {
             axios.post(baseURL + '/uploadFile', formData, {
