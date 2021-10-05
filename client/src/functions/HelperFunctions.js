@@ -9,15 +9,38 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
     var createdUploadFolder = null;
     var pageToken = null;
 
-    await axios
+    if (subFolder === 'Geotechnical') {
+        await axios
         .post(baseURL+'/getFolder', {
-          q: "mimeType='application/vnd.google-apps.folder' and name='" + subFolder + "' and '" + queriedJobFolder[0].id + "' in parents",
+            q: "mimeType='application/vnd.google-apps.folder' and name='Engineering' and '" + queriedJobFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+        })
+        .then((response) => {
+            queriedSubFolder = response.data;
+            // console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+        });
+
+        await axios
+        .post(baseURL+'/getFolder', {
+          q: "mimeType='application/vnd.google-apps.folder' and name='" + subFolder + "' and '" + queriedSubFolder[0].id + "' in parents",
           fields: 'files(name,id)'
         })
         .then((response) => {
           queriedSubFolder = response.data;
         //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
         });
+    } else {
+        await axios
+            .post(baseURL+'/getFolder', {
+              q: "mimeType='application/vnd.google-apps.folder' and name='" + subFolder + "' and '" + queriedJobFolder[0].id + "' in parents",
+              fields: 'files(name,id)'
+            })
+            .then((response) => {
+              queriedSubFolder = response.data;
+            //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+            });
+    }
+
 
     if (subFolder === 'CAD') {
         await axios
@@ -44,8 +67,8 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
     });
     
     var latestFile = '';
-    if (queriedChildrenList.files.length === 0) {
-        console.log('No folders');
+    if (queriedChildrenList.files.length === 0 || queriedChildrenList.files[0].name.toString() === 'Fee Request') {
+        // console.log('No folders');
         latestFile = '00';
     } else {
         latestFile = await queriedChildrenList.files[0].name.toString();
