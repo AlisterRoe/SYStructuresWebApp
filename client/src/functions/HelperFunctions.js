@@ -11,24 +11,24 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
 
     if (subFolder === 'Geotechnical') {
         await axios
-        .post(baseURL+'/getFolder', {
-            q: "mimeType='application/vnd.google-apps.folder' and name='Engineering' and '" + queriedJobFolder[0].id + "' in parents",
-            fields: 'files(name,id)'
-        })
-        .then((response) => {
-            queriedSubFolder = response.data;
-            // console.log('End getSubFolderID ' + queriedSubFolder[0].id)
-        });
+            .post(baseURL+'/getFolder', {
+                q: "mimeType='application/vnd.google-apps.folder' and name='Engineering' and '" + queriedJobFolder[0].id + "' in parents",
+                fields: 'files(name,id)'
+            })
+            .then((response) => {
+                queriedSubFolder = response.data;
+                // console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+            });
 
         await axios
-        .post(baseURL+'/getFolder', {
-          q: "mimeType='application/vnd.google-apps.folder' and name='" + subFolder + "' and '" + queriedSubFolder[0].id + "' in parents",
-          fields: 'files(name,id)'
-        })
-        .then((response) => {
-          queriedSubFolder = response.data;
-        //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
-        });
+            .post(baseURL+'/getFolder', {
+            q: "mimeType='application/vnd.google-apps.folder' and name='" + subFolder + "' and '" + queriedSubFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+            })
+            .then((response) => {
+            queriedSubFolder = response.data;
+            //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+            });
     } else {
         await axios
             .post(baseURL+'/getFolder', {
@@ -40,7 +40,6 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
             //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
             });
     }
-
 
     if (subFolder === 'CAD') {
         await axios
