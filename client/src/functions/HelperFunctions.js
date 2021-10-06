@@ -41,29 +41,29 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
             });
     }
 
-    if (subFolder === 'CAD') {
+    if (subFolder !== 'Photos') {
         await axios
-        .post(baseURL+'/getFolder', {
-            q: "mimeType='application/vnd.google-apps.folder' and name='Received' and '" + queriedSubFolder[0].id + "' in parents",
-            fields: 'files(name,id)'
-        })
-        .then((response) => {
-            queriedSubFolder = response.data;
-            // console.log('End getSubFolderID ' + queriedSubFolder[0].id)
-        });
+            .post(baseURL+'/getFolder', {
+                q: "mimeType='application/vnd.google-apps.folder' and name='Received' and '" + queriedSubFolder[0].id + "' in parents",
+                fields: 'files(name,id)'
+            })
+            .then((response) => {
+                queriedSubFolder = response.data;
+                // console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+            });
     }
 
     await axios
-    .post(baseURL+'/listChildrenFolders', {
-        q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolder[0].id + "' in parents",
-        fields: 'nextPageToken, files(id, name)',
-        spaces: 'drive',
-        pageToken: pageToken
-    })
-    .then((response) => {
-        queriedChildrenList = response.data;
-        // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
-    });
+        .post(baseURL+'/listChildrenFolders', {
+            q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolder[0].id + "' in parents",
+            fields: 'nextPageToken, files(id, name)',
+            spaces: 'drive',
+            pageToken: pageToken
+        })
+        .then((response) => {
+            queriedChildrenList = response.data;
+            // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
+        });
     
     var latestFile = '';
     if (queriedChildrenList.files.length === 0 || queriedChildrenList.files[0].name.toString() === 'Fee Request') {
@@ -80,15 +80,15 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
     }
     var name = await fileNumber + ' - ' + date;
     await axios
-    .post(baseURL+'/createFolder', {
-        name: name,
-        parents: [queriedSubFolder[0].id],
-        mimeType: 'application/vnd.google-apps.folder'
-    })
-    .then((response) => {
-        createdUploadFolder = response.data.id;
-        // console.log('End createFolder ' + createdUploadFolder)
-    });
+        .post(baseURL+'/createFolder', {
+            name: name,
+            parents: [queriedSubFolder[0].id],
+            mimeType: 'application/vnd.google-apps.folder'
+        })
+        .then((response) => {
+            createdUploadFolder = response.data.id;
+            // console.log('End createFolder ' + createdUploadFolder)
+        });
 
     for (var i = 0; i < fileArray.length; i++) {
         const formData = new FormData();
