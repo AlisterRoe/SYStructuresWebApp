@@ -176,7 +176,7 @@ export default function Dashboard() {
               
               <input type='file' onChange={onChange} ref={saveReceivedDocInput} style={{display: 'none'}} multiple/>
 
-              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('CAD'); onButtonClick()}}>DRAWINGS/DOCUMENTS</Button>
+              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('CAD'); onButtonClick()}}>CAD</Button>
               <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Photos'); onButtonClick()}}>PHOTOS</Button>
               <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Shop Drawings'); onButtonClick()}}>SHOP DRAWINGS</Button>
               <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Geotechnical'); onButtonClick()}}>GEOTECHNICAL</Button>

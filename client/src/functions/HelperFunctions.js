@@ -66,11 +66,13 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
         });
     
     var latestFile = '';
-    if (queriedChildrenList.files.length === 0 || queriedChildrenList.files[0].name.toString() === 'Fee Request') {
+    var sortedChildrenList = queriedChildrenList.files.sort((a, b) => (a.name > b.name) ? 1 : -1);
+    console.log(sortedChildrenList);
+    if (sortedChildrenList.length === 0) {
         // console.log('No folders');
         latestFile = '00';
     } else {
-        latestFile = await queriedChildrenList.files[0].name.toString();
+        latestFile = await sortedChildrenList[sortedChildrenList.length - 1].name.toString();
     }
     var date = await moment().format("DD MMMM YYYY").toLocaleString();
     var fileNumber = await Number(latestFile.substring(0, 2));
