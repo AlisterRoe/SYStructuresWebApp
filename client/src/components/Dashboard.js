@@ -3,7 +3,7 @@ import { Alert, Navbar, Container, Nav, Row, Col, Card, Form, Button } from 'rea
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
-import { savedReceivedDocAPI } from '../functions/HelperFunctions'
+import { savedReceivedDocAPI, savedIssuedDocIssuedAPI } from '../functions/HelperFunctions'
 import { RemarkModal } from './RemarkModal'
 
 export default function Dashboard() {
@@ -25,6 +25,7 @@ export default function Dashboard() {
   }
 
   const saveReceivedDocInput = useRef(null)
+  const saveIssuedDocInput = useRef(null)
 
   const [queriedJobFolder, setQueriedJobFolder] = useState(null);
 
@@ -63,6 +64,22 @@ export default function Dashboard() {
       
     }
   }
+
+  async function saveIssuedDocIssued( fileArrayFunc) {
+    if (queriedJobFolder === null || queriedJobFolder.length === 0) {
+      setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
+      setShowFileUploadError(true);
+      return;
+    } else {
+      await setRemarkData(await savedIssuedDocIssuedAPI(queriedJobFolder, fileArrayFunc));
+      await handleShowRemarkModal();
+      
+      await setShowFileUploadError(false);
+      await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
+      await setShowFileUploadSuccess(true);
+      
+    }
+  }
   
   const jobNumberRef = useRef()
 
@@ -74,7 +91,7 @@ export default function Dashboard() {
 
   const [receivedSubFolder, setReceivedSubFolder] = useState('')
 
-  async function onChange(e) {
+  async function onChangeReceived(e) {
     if (e.target.files[0] !== null) {
       if (receivedSubFolder !== '') {
         await saveReceivedDoc(receivedSubFolder, e.target.files);
@@ -84,8 +101,19 @@ export default function Dashboard() {
     e.target.value = null; // reset onChange
   };
 
-  function onButtonClick() {
+  async function onChangeIssued(e) {
+    if (e.target.files[0] !== null) {
+      await saveIssuedDocIssued(e.target.files);
+    }
+    e.target.value = null; // reset onChange
+  };
+
+  function onButtonClickReceived() {
     saveReceivedDocInput.current.click();
+  };
+  
+  function onButtonClickIssued() {
+    saveIssuedDocInput.current.click();
   };
   
   const [showRemarkModal, setShowRemarkModal] = useState(false);
@@ -151,10 +179,10 @@ export default function Dashboard() {
           </Col>
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
-            {/* <input type='file' onChange={onChange} ref={saveReceivedDocInput} style={{display: 'none'}} multiple/> */}
-            {/* <Button className="w-50" variant="outline-dark" onClick={() => {setReceivedSubFolder('CAD'); onButtonClick()}}>SAVED RECEIVED DOCUMENTS</Button> */}
+            <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} multiple/>
             
-            <Button className="w-50" variant="outline-dark" type="submit" onClick={() => {handleShowRemarkModal()}}>ISSUE SY DOCUMENT</Button>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT</Button>
+
           </Col>
           <Col xs={3} className="d-flex align-items-center justify-content-center">
             <Card className="w-75 h-75">
@@ -174,12 +202,12 @@ export default function Dashboard() {
             </Container>
             <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
               
-              <input type='file' onChange={onChange} ref={saveReceivedDocInput} style={{display: 'none'}} multiple/>
+              <input type='file' onChange={onChangeReceived} ref={saveReceivedDocInput} style={{display: 'none'}} multiple/>
 
-              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('CAD'); onButtonClick()}}>CAD</Button>
-              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Photos'); onButtonClick()}}>PHOTOS</Button>
-              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Shop Drawings'); onButtonClick()}}>SHOP DRAWINGS</Button>
-              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Geotechnical'); onButtonClick()}}>GEOTECHNICAL</Button>
+              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('CAD'); onButtonClickReceived()}}>CAD</Button>
+              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Photos'); onButtonClickReceived()}}>PHOTOS</Button>
+              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Shop Drawings'); onButtonClickReceived()}}>SHOP DRAWINGS</Button>
+              <Button className="w-100" variant="outline-dark" onClick={() => {setReceivedSubFolder('Geotechnical'); onButtonClickReceived()}}>GEOTECHNICAL</Button>
 
             </Container>
           </Col>
