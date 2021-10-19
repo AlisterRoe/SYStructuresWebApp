@@ -3,7 +3,7 @@ import { Alert, Navbar, Container, Nav, Row, Col, Card, Form, Button } from 'rea
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
-import { savedReceivedDocAPI, savedIssuedDocIssuedAPI } from '../functions/HelperFunctions'
+import { savedReceivedDocAPI, savedIssuedDocIssuedAPI, savedIssuedDocCurrentAPI } from '../functions/HelperFunctions'
 import { RemarkModal } from './RemarkModal'
 
 export default function Dashboard() {
@@ -65,13 +65,14 @@ export default function Dashboard() {
     }
   }
 
-  async function saveIssuedDocIssued( fileArrayFunc) {
+  async function saveIssuedDoc( fileArrayFunc) {
     if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
       setShowFileUploadError(true);
       return;
     } else {
       await setRemarkData(await savedIssuedDocIssuedAPI(queriedJobFolder, fileArrayFunc));
+      await savedIssuedDocCurrentAPI(queriedJobFolder, fileArrayFunc);
       await handleShowRemarkModal();
       
       await setShowFileUploadError(false);
@@ -103,7 +104,7 @@ export default function Dashboard() {
 
   async function onChangeIssued(e) {
     if (e.target.files[0] !== null) {
-      await saveIssuedDocIssued(e.target.files);
+      await saveIssuedDoc(e.target.files);
     }
     e.target.value = null; // reset onChange
   };
