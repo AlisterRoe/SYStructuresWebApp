@@ -241,7 +241,6 @@ app.post('/renameID', function (req, res) {
 });
 
 app.post('/moveFile', function (req, res) {
-  console.log(req);
   const fileId = req.body.fileId;
   const addParentId = req.body.addParentId;
   const removeParentId = req.body.removeParentId;
@@ -258,11 +257,14 @@ app.post('/moveFile', function (req, res) {
     addParents: addParentId,
     removeParents: removeParentId,
     fields: 'id, parents'
-  }, function (err, file) {
+  }, function (err, response) {
     if (err) {
       // Handle error
+      console.error(err);
     } else {
-      // File moved.
+      const files = response.data;
+      console.log("Moved " + fileId)
+      res.send(files)
     }
   });
 });
