@@ -272,10 +272,8 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
     
     var supersededFiles = [];
     queriedChildrenList.files.forEach(function (existingFile) {
-        console.log(existingFile.name +  " " + existingFile.id);
         for (var i = 0; i < fileArray.length; i++) {
             if (existingFile.name === fileArray[i].name) {
-                console.log("match on name: " + fileArray[i].name);
                 supersededFiles.push(existingFile.id);
             }
         }
