@@ -248,9 +248,6 @@ app.post('/moveFile', function (req, res) {
   // Authenticating drive API
   const drive = google.drive({ version: 'v3', auth });
 
-  // fileId = '1sTWaJ_j7PkjzaBWtNc3IzovK5hQf21FbOw9yLeeLPNQ'
-  // folderId = '0BwwA4oUTeiV1TGRPeTVjaWRDY1E'
-
   // Move the file to the new folder
   drive.files.update({
     fileId: fileId,

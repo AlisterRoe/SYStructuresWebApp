@@ -295,33 +295,6 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
             }
         }
     }
-    
-    // var latestFile = '';
-    // var sortedChildrenList = queriedChildrenList.files.sort((a, b) => (a.name > b.name) ? 1 : -1);
-    // console.log(sortedChildrenList);
-    // if (sortedChildrenList.length === 0) {
-    //     // console.log('No folders');
-    //     latestFile = '00';
-    // } else {
-    //     latestFile = await sortedChildrenList[sortedChildrenList.length - 1].name.toString();
-    // }
-    // var date = await moment().format("DD MMMM YYYY").toLocaleString();
-    // var fileNumber = await Number(latestFile.substring(0, 2));
-    // await fileNumber++;
-    // if (fileNumber.toString().length === 1) {
-    //     fileNumber = await '0' + fileNumber;
-    // }
-    // var name = await fileNumber + ' - ' + date;
-    // await axios
-    //     .post(baseURL+'/createFolder', {
-    //         name: name,
-    //         parents: [queriedSubFolder[0].id],
-    //         mimeType: 'application/vnd.google-apps.folder'
-    //     })
-    //     .then((response) => {
-    //         createdUploadFolder = response.data.id;
-    //         // console.log('End createFolder ' + createdUploadFolder)
-    //     });
 
     for (var i = 0; i < fileArray.length; i++) {
         const formData = new FormData();
