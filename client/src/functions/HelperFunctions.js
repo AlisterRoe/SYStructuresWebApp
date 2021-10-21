@@ -67,7 +67,7 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
     
     var latestFile = '';
     var sortedChildrenList = queriedChildrenList.files.sort((a, b) => (a.name > b.name) ? 1 : -1);
-    console.log(sortedChildrenList);
+    // console.log(sortedChildrenList);
     if (sortedChildrenList.length === 0) {
         // console.log('No folders');
         latestFile = '00';
@@ -164,7 +164,7 @@ export async function savedIssuedDocIssuedAPI(queriedJobFolder, fileArray) {
     
     var latestFile = '';
     var sortedChildrenList = queriedChildrenList.files.sort((a, b) => (a.name > b.name) ? 1 : -1);
-    console.log(sortedChildrenList);
+    // console.log(sortedChildrenList);
     if (sortedChildrenList.length === 0) {
         // console.log('No folders');
         latestFile = '00';
@@ -213,9 +213,10 @@ export async function savedIssuedDocIssuedAPI(queriedJobFolder, fileArray) {
 
 export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
     var queriedSubFolder = null;
-    // var queriedChildrenList = null;
+    var queriedChildrenList = null;
     // var createdUploadFolder = null;
-    // var pageToken = null;
+    var pageToken = null;
+    var supersededFolder = null;
 
     await axios
         .post(baseURL+'/getFolder', {
@@ -246,18 +247,56 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
             queriedSubFolder = response.data;
         //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
         });
+        
+    await axios
+        .post(baseURL+'/getFolder', {
+            q: "mimeType='application/vnd.google-apps.folder' and name='SS' and '" + queriedSubFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+        })
+        .then((response) => {
+            supersededFolder = response.data;
+            // console.log('End getSubFolderID ' + supersededFolder[0].id)
+        });
 
-    // await axios
-    //     .post(baseURL+'/listChildrenFolders', {
-    //         q: "mimeType='application/vnd.google-apps.folder' and '" + queriedSubFolder[0].id + "' in parents",
-    //         fields: 'nextPageToken, files(id, name)',
-    //         spaces: 'drive',
-    //         pageToken: pageToken
-    //     })
-    //     .then((response) => {
-    //         queriedChildrenList = response.data;
-    //         // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
-    //     });
+    await axios
+        .post(baseURL+'/listChildrenFolders', {
+            q: "'" + queriedSubFolder[0].id + "' in parents",
+            fields: 'nextPageToken, files(id, name)',
+            spaces: 'drive',
+            pageToken: pageToken
+        })
+        .then((response) => {
+            queriedChildrenList = response.data;
+            // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
+        });
+    
+    var supersededFiles = [];
+    queriedChildrenList.files.forEach(function (existingFile) {
+        console.log(existingFile.name +  " " + existingFile.id);
+        for (var i = 0; i < fileArray.length; i++) {
+            if (existingFile.name === fileArray[i].name) {
+                console.log("match on name: " + fileArray[i].name);
+                supersededFiles.push(existingFile.id);
+            }
+        }
+    });
+
+    for (var i = 0; i < supersededFiles.length; i++) {
+        const formData = new FormData();
+        await formData.append('fileId', supersededFiles[i]);
+        await formData.append('addParentId', supersededFolder[0].id);
+        await formData.append('removeParentId', queriedSubFolder[0].id);
+
+        try {
+            axios.post(baseURL + '/moveFile', formData, {});
+        } catch (err) {
+            if (err.response.status === 500) {
+            // setMessage('There was a problem with the server');
+            } else {
+            // setMessage(err.response.data.msg);
+            }
+        }
+    }
     
     // var latestFile = '';
     // var sortedChildrenList = queriedChildrenList.files.sort((a, b) => (a.name > b.name) ? 1 : -1);

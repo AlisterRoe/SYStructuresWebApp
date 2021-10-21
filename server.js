@@ -240,5 +240,32 @@ app.post('/renameID', function (req, res) {
   });
 });
 
+app.post('/moveFile', function (req, res) {
+  console.log(req);
+  const fileId = req.body.fileId;
+  const addParentId = req.body.addParentId;
+  const removeParentId = req.body.removeParentId;
+  
+  // Authenticating drive API
+  const drive = google.drive({ version: 'v3', auth });
+
+  // fileId = '1sTWaJ_j7PkjzaBWtNc3IzovK5hQf21FbOw9yLeeLPNQ'
+  // folderId = '0BwwA4oUTeiV1TGRPeTVjaWRDY1E'
+
+  // Move the file to the new folder
+  drive.files.update({
+    fileId: fileId,
+    addParents: addParentId,
+    removeParents: removeParentId,
+    fields: 'id, parents'
+  }, function (err, file) {
+    if (err) {
+      // Handle error
+    } else {
+      // File moved.
+    }
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server Started ${PORT}`));
