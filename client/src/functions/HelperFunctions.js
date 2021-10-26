@@ -271,11 +271,33 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
         });
     
     var supersededFiles = [];
-    queriedChildrenList.files.forEach(function (existingFile) {
+    var outdatedFiles = [];
+    await queriedChildrenList.files.forEach(function (existingFile) {
         for (var i = 0; i < fileArray.length; i++) {
-            if (existingFile.name === fileArray[i].name) {
-                supersededFiles.push(existingFile.id);
+            var existing_revision_index = existingFile.name.lastIndexOf("_");
+            if (existing_revision_index !== -1) {
+                var existing_base_name = existingFile.name.substr(0,existing_revision_index);
+                var new_revision_index = fileArray[i].name.lastIndexOf("_");
+                if (new_revision_index !== -1) {
+                    var new_base_name = fileArray[i].name.substr(0,new_revision_index);
+                    if (existing_base_name === new_base_name) {
+                        var existing_revision_number = existingFile.name.substr(existing_revision_index + 1);
+                        var new_revision_number = fileArray[i].name.substr(new_revision_index + 1);
+                        var existing_decimal_index = existing_revision_number.lastIndexOf(".");
+                        var new_decimal_index = new_revision_number.lastIndexOf(".");
+                        existing_revision_number = Number(existing_revision_number.substr(0,existing_decimal_index));
+                        new_revision_number = Number(new_revision_number.substr(0,new_decimal_index));
+                        if (new_revision_number >= existing_revision_number) {
+                            supersededFiles.push(existingFile.id);
+                        } else {
+                            outdatedFiles.push(i);
+                        }
+                    }
+                }
             }
+            // if (existingFile.name === fileArray[i].name) {
+            //     supersededFiles.push(existingFile.id);
+            // }
         }
     });
 
@@ -296,22 +318,24 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
         }
     }
 
-    for (var i = 0; i < fileArray.length; i++) {
-        const formData = new FormData();
-        await formData.append('file', fileArray[i]);
-        await formData.append('id', queriedSubFolder[0].id);
+    for (var j = 0; j < fileArray.length; j++) {
+        if (!outdatedFiles.includes(j)) {
+            const formData = new FormData();
+            await formData.append('file', fileArray[j]);
+            await formData.append('id', queriedSubFolder[0].id);
 
-        try {
-            axios.post(baseURL + '/uploadFile', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-            });
-        } catch (err) {
-            if (err.response.status === 500) {
-            // setMessage('There was a problem with the server');
-            } else {
-            // setMessage(err.response.data.msg);
+            try {
+                axios.post(baseURL + '/uploadFile', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+                });
+            } catch (err) {
+                if (err.response.status === 500) {
+                // setMessage('There was a problem with the server');
+                } else {
+                // setMessage(err.response.data.msg);
+                }
             }
         }
     }

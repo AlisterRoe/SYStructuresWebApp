@@ -65,7 +65,7 @@ export default function Dashboard() {
     }
   }
 
-  async function saveIssuedDoc( fileArrayFunc) {
+  async function saveIssuedDoc(fileArrayFunc) {
     if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
       setShowFileUploadError(true);
