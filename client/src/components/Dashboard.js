@@ -5,9 +5,12 @@ import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
 import { savedReceivedDocAPI, savedIssuedDocIssuedAPI, savedIssuedDocCurrentAPI } from '../functions/HelperFunctions'
 import { RemarkModal } from './RemarkModal'
+import PuffLoader from "react-spinners/PuffLoader"
 
 export default function Dashboard() {
   const baseURL = "http://localhost:5000";
+
+  const [loading, setLoading] = useState(false)
 
   const [error, setError] = useState("")
   const { currentUser, logout } = useAuth()
@@ -55,9 +58,11 @@ export default function Dashboard() {
       setShowFileUploadError(true);
       return;
     } else {
+      await setLoading(true);
       await setRemarkData(await savedReceivedDocAPI(queriedJobFolder, subFolder, fileArrayFunc));
       await handleShowRemarkModal();
       
+      await setLoading(false);
       await setShowFileUploadError(false);
       await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
       await setShowFileUploadSuccess(true);
@@ -71,10 +76,12 @@ export default function Dashboard() {
       setShowFileUploadError(true);
       return;
     } else {
+      await setLoading(true);
       await setRemarkData(await savedIssuedDocIssuedAPI(queriedJobFolder, fileArrayFunc));
       await savedIssuedDocCurrentAPI(queriedJobFolder, fileArrayFunc);
       await handleShowRemarkModal();
       
+      await setLoading(false);
       await setShowFileUploadError(false);
       await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
       await setShowFileUploadSuccess(true);
@@ -149,8 +156,16 @@ export default function Dashboard() {
           Close
         </Button>
       </Alert>
+      {
+        loading ?
+        
+        <div style = {{ height:"93vh", width:"100%", display:"flex", justifyContent:"center", alignItems:"center" }}>
+          <PuffLoader color={'#8B0000'} loading={loading} size={150}/>
+        </div>
+        
+        :
 
-      <Container fluid>
+        <Container fluid>
         <Row style={{  height: "25vh" }}>
           <Col xs={4} className="align-middle">
             <Card className="m-2">
@@ -288,6 +303,7 @@ export default function Dashboard() {
           </div>
         </div> */}
       </Container>
+      }
     </>
   )
 }
