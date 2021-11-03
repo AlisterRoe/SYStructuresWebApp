@@ -106,7 +106,7 @@ export default function Dashboard() {
 
         const ws = wb.Sheets[wsname];
 
-        const data = XLSX.utils.sheet_to_row_object_array(ws);
+        const data = XLSX.utils.sheet_to_json(ws);
 
         resolve(data);
       };
