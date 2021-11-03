@@ -6,6 +6,7 @@ import axios from 'axios'
 import { savedReceivedDocAPI, savedIssuedDocIssuedAPI, savedIssuedDocCurrentAPI } from '../functions/HelperFunctions'
 import { RemarkModal } from './RemarkModal'
 import PuffLoader from "react-spinners/PuffLoader"
+import * as XLSX from "xlsx"
 
 export default function Dashboard() {
   const baseURL = "http://localhost:5000";
@@ -29,6 +30,7 @@ export default function Dashboard() {
 
   const saveReceivedDocInput = useRef(null)
   const saveIssuedDocInput = useRef(null)
+  const readXlsxFile = useRef(null)
 
   const [queriedJobFolder, setQueriedJobFolder] = useState(null);
 
@@ -88,6 +90,43 @@ export default function Dashboard() {
       
     }
   }
+  const [items, setItems] = useState([]);
+
+  const readExcel = (file) => {
+    const promise = new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+
+      fileReader.onload = (e) => {
+        const bufferArray = e.target.result;
+
+        const wb = XLSX.read(bufferArray, { type: "buffer" });
+
+        const wsname = wb.SheetNames[0];
+
+        const ws = wb.Sheets[wsname];
+
+        const data = XLSX.utils.sheet_to_row_object_array(ws);
+
+        resolve(data);
+      };
+
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+
+    promise.then((d) => {
+      console.log(d);
+      setItems(d);
+    });
+  };
+
+  async function getFileList(sheetItems) {
+    for (var i = 0; i < sheetItems.length; i++) {
+      console.log(sheetItems[i]);
+    }
+  }
   
   const jobNumberRef = useRef()
 
@@ -115,6 +154,14 @@ export default function Dashboard() {
     }
     e.target.value = null; // reset onChange
   };
+  
+  async function onChangeXlsx(e) {
+    if (e.target.files[0] !== null) {
+      await readExcel(e.target.files[0]);
+      await getFileList(items);
+    }
+    e.target.value = null; // reset onChange
+  };
 
   function onButtonClickReceived() {
     saveReceivedDocInput.current.click();
@@ -122,6 +169,10 @@ export default function Dashboard() {
   
   function onButtonClickIssued() {
     saveIssuedDocInput.current.click();
+  }; 
+  
+  function onButtonClickXlsx() {
+    readXlsxFile.current.click();
   };
   
   const [showRemarkModal, setShowRemarkModal] = useState(false);
@@ -196,8 +247,10 @@ export default function Dashboard() {
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
             <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} multiple/>
-            
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT</Button>
+
+            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}}/>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}}>READ XLSX</Button>
 
           </Col>
           <Col xs={3} className="d-flex align-items-center justify-content-center">
