@@ -90,14 +90,14 @@ export default function Dashboard() {
       
     }
   }
-  const [items, setItems] = useState([]);
+  var xlsxItems = [];
 
-  const readExcel = (file) => {
-    const promise = new Promise((resolve, reject) => {
+  async function readExcel(file) {
+    const promise = new Promise(async (resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsArrayBuffer(file);
 
-      fileReader.onload = (e) => {
+      fileReader.onload = async (e) => {
         const bufferArray = e.target.result;
 
         const wb = XLSX.read(bufferArray, { type: "buffer" });
@@ -116,16 +116,18 @@ export default function Dashboard() {
       };
     });
 
-    promise.then((d) => {
+    await promise.then(async (d) => {
       console.log(d);
-      setItems(d);
+      xlsxItems = d;
     });
   };
 
   async function getFileList(sheetItems) {
     for (var i = 0; i < sheetItems.length; i++) {
-      console.log(sheetItems[i]);
+      const objectArray = Object.values(sheetItems[i]);
+      console.log(objectArray[0]);
     }
+    xlsxItems = [];
   }
   
   const jobNumberRef = useRef()
@@ -158,7 +160,7 @@ export default function Dashboard() {
   async function onChangeXlsx(e) {
     if (e.target.files[0] !== null) {
       await readExcel(e.target.files[0]);
-      await getFileList(items);
+      await getFileList(xlsxItems);
     }
     e.target.value = null; // reset onChange
   };
