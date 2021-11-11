@@ -275,7 +275,7 @@ export default function Dashboard() {
             <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} multiple/>
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT</Button>
 
-            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}}/>
+            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv"/>
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}}>READ XLSX</Button>
 
           </Col>
