@@ -3,7 +3,7 @@ import { Alert, Navbar, Container, Nav, Row, Col, Card, Form, Button } from 'rea
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios'
-import { savedReceivedDocAPI, savedIssuedDocIssuedAPI, savedIssuedDocCurrentAPI } from '../functions/HelperFunctions'
+import { savedReceivedDocAPI, savedIssuedDocIssuedAPI, savedIssuedDocCurrentAPI, cleanXlsxAPI } from '../functions/HelperFunctions'
 import { RemarkModal } from './RemarkModal'
 import PuffLoader from "react-spinners/PuffLoader"
 import * as XLSX from "xlsx"
@@ -90,7 +90,26 @@ export default function Dashboard() {
       
     }
   }
+
   var xlsxItems = [];
+
+  async function cleanXlsx(xlsxFile) {
+    if (queriedJobFolder === null || queriedJobFolder.length === 0) {
+      setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
+      setShowFileUploadError(true);
+      return;
+    } else {
+      await setLoading(true);
+      await readExcel(xlsxFile);
+      await cleanXlsxAPI(queriedJobFolder, await getFileList(xlsxItems));
+      
+      await setLoading(false);
+      await setShowFileUploadError(false);
+      await setMessage('Successfully cleaned files');
+      await setShowFileUploadSuccess(true);
+      
+    }
+  }
 
   async function readExcel(file) {
     const promise = new Promise(async (resolve, reject) => {
@@ -117,17 +136,21 @@ export default function Dashboard() {
     });
 
     await promise.then(async (d) => {
-      console.log(d);
+      // console.log(d);
       xlsxItems = d;
     });
   };
 
   async function getFileList(sheetItems) {
+    var xlsxFileList = [];
     for (var i = 0; i < sheetItems.length; i++) {
       const objectArray = Object.values(sheetItems[i]);
-      console.log(objectArray[0]);
+      var xlsxFileName = queriedJobFolder[0].name + "_" + objectArray[0] + "_" + objectArray[1] + "_" + objectArray[2];
+      // console.log(xlsxFileName);
+      xlsxFileList.push(xlsxFileName);
     }
     xlsxItems = [];
+    return xlsxFileList;
   }
   
   const jobNumberRef = useRef()
@@ -159,8 +182,9 @@ export default function Dashboard() {
   
   async function onChangeXlsx(e) {
     if (e.target.files[0] !== null) {
-      await readExcel(e.target.files[0]);
-      await getFileList(xlsxItems);
+      // await readExcel(e.target.files[0]);
+      // await getFileList(xlsxItems);
+      await cleanXlsx(e.target.files[0]);
     }
     e.target.value = null; // reset onChange
   };

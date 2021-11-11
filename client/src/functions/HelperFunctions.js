@@ -340,3 +340,96 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
         }
     }
 }
+
+export async function cleanXlsxAPI(queriedJobFolder, fileNameArray) {
+    var queriedSubFolder = null;
+    var queriedChildrenList = null;
+    // var createdUploadFolder = null;
+    var pageToken = null;
+    var supersededFolder = null;
+
+    await axios
+        .post(baseURL+'/getFolder', {
+            q: "mimeType='application/vnd.google-apps.folder' and name='CAD' and '" + queriedJobFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+        })
+        .then((response) => {
+            queriedSubFolder = response.data;
+        //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+        });
+
+    await axios
+        .post(baseURL+'/getFolder', {
+            q: "mimeType='application/vnd.google-apps.folder' and name='SY' and '" + queriedSubFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+        })
+        .then((response) => {
+            queriedSubFolder = response.data;
+        //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+        });
+
+    await axios
+        .post(baseURL+'/getFolder', {
+            q: "mimeType='application/vnd.google-apps.folder' and name='Current PDF' and '" + queriedSubFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+        })
+        .then((response) => {
+            queriedSubFolder = response.data;
+        //   console.log('End getSubFolderID ' + queriedSubFolder[0].id)
+        });
+        
+    await axios
+        .post(baseURL+'/getFolder', {
+            q: "mimeType='application/vnd.google-apps.folder' and name='SS' and '" + queriedSubFolder[0].id + "' in parents",
+            fields: 'files(name,id)'
+        })
+        .then((response) => {
+            supersededFolder = response.data;
+            // console.log('End getSubFolderID ' + supersededFolder[0].id)
+        });
+
+    await axios
+        .post(baseURL+'/listChildrenFolders', {
+            q: "'" + queriedSubFolder[0].id + "' in parents",
+            fields: 'nextPageToken, files(id, name)',
+            spaces: 'drive',
+            pageToken: pageToken
+        })
+        .then((response) => {
+            queriedChildrenList = response.data;
+            // console.log('End getSubFolderChildrenList ' + queriedChildrenList.files[0].name)
+        });
+    
+    var supersededFiles = [];
+    // var outdatedFiles = [];
+    await queriedChildrenList.files.forEach(function (existingFile) {
+        var existing_decimal_index = existingFile.name.lastIndexOf(".");
+        if (existing_decimal_index !== -1) {
+            var existingFileName = existingFile.name.substr(0,existing_decimal_index);
+            for (var i = 0; i < fileNameArray.length; i++) {
+                if (existingFileName === fileNameArray[i]) {
+                    break;
+                } else if (i === (fileNameArray.length-1)) {
+                    supersededFiles.push(existingFile.id);
+                }
+            }
+        }
+    });
+
+    for (var i = 0; i < supersededFiles.length; i++) {
+        const formData = new FormData();
+        await formData.append('fileId', supersededFiles[i]);
+        await formData.append('addParentId', supersededFolder[0].id);
+        await formData.append('removeParentId', queriedSubFolder[0].id);
+
+        try {
+            axios.post(baseURL + '/moveFile', formData, {});
+        } catch (err) {
+            if (err.response.status === 500) {
+            // setMessage('There was a problem with the server');
+            } else {
+            // setMessage(err.response.data.msg);
+            }
+        }
+    }
+}
