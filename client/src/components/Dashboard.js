@@ -273,10 +273,10 @@ export default function Dashboard() {
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
             <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} accept=".pdf" multiple/>
-            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT</Button>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT/S</Button>
 
             <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv"/>
-            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}}>READ XLSX</Button>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}}>CLEAN CURRENT PDF (EXCEL)</Button>
 
           </Col>
           <Col xs={3} className="d-flex align-items-center justify-content-center">
