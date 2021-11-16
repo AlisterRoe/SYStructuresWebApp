@@ -272,7 +272,7 @@ export default function Dashboard() {
           </Col>
           <Col className="d-flex align-items-center flex-column justify-content-evenly">
 
-            <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} multiple/>
+            <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} accept=".pdf" multiple/>
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT</Button>
 
             <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv"/>
