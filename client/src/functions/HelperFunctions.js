@@ -281,23 +281,32 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
                 if (new_revision_index !== -1) {
                     var new_base_name = fileArray[i].name.substr(0,new_revision_index);
                     if (existing_base_name === new_base_name) {
-                        var existing_revision_number = existingFile.name.substr(existing_revision_index + 1);
-                        var new_revision_number = fileArray[i].name.substr(new_revision_index + 1);
-                        var existing_decimal_index = existing_revision_number.lastIndexOf(".");
-                        var new_decimal_index = new_revision_number.lastIndexOf(".");
-                        existing_revision_number = Number(existing_revision_number.substr(0,existing_decimal_index));
-                        new_revision_number = Number(new_revision_number.substr(0,new_decimal_index));
-                        if (new_revision_number >= existing_revision_number) {
-                            supersededFiles.push(existingFile.id);
-                        } else {
-                            outdatedFiles.push(i);
+                        var existing_revision = existingFile.name.substr(existing_revision_index + 1);
+                        var new_revision = fileArray[i].name.substr(new_revision_index + 1);
+                        var existing_decimal_index = existing_revision.lastIndexOf(".");
+                        var new_decimal_index = new_revision.lastIndexOf(".");
+                        existing_revision = existing_revision.substr(0,existing_decimal_index);
+                        new_revision = new_revision.substr(0,new_decimal_index);
+                        if (isNaN(new_revision) === false && isNaN(existing_revision) === false) {
+                            var existing_revision_number = Number(existing_revision);
+                            var new_revision_number = Number(new_revision);
+                            if (new_revision_number >= existing_revision_number) {
+                                supersededFiles.push(existingFile.id);
+                            } else {
+                                outdatedFiles.push(i);
+                            }
+                        } else if (isNaN(new_revision) === true && isNaN(existing_revision) === true) {
+                            var existing_revision_letter = Number(existing_revision.charCodeAt(0));
+                            var new_revision_letter = Number(new_revision.charCodeAt(0));
+                            if (new_revision_letter >= existing_revision_letter) {
+                                supersededFiles.push(existingFile.id);
+                            } else {
+                                outdatedFiles.push(i);
+                            }
                         }
                     }
                 }
             }
-            // if (existingFile.name === fileArray[i].name) {
-            //     supersededFiles.push(existingFile.id);
-            // }
         }
     });
 
