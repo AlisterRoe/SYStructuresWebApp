@@ -98,7 +98,7 @@ export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray
         await formData.append('id', createdUploadFolder);
 
         try {
-            axios.post(baseURL + '/uploadFile', formData, {
+            await axios.post(baseURL + '/uploadFile', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -195,7 +195,7 @@ export async function savedIssuedDocIssuedAPI(queriedJobFolder, fileArray) {
         await formData.append('id', createdUploadFolder);
 
         try {
-            axios.post(baseURL + '/uploadFile', formData, {
+            await axios.post(baseURL + '/uploadFile', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -317,7 +317,7 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
         await formData.append('removeParentId', queriedSubFolder[0].id);
 
         try {
-            axios.post(baseURL + '/moveFile', formData, {});
+            await axios.post(baseURL + '/moveFile', formData, {});
         } catch (err) {
             if (err.response.status === 500) {
             // setMessage('There was a problem with the server');
@@ -334,7 +334,7 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
             await formData.append('id', queriedSubFolder[0].id);
 
             try {
-                axios.post(baseURL + '/uploadFile', formData, {
+                await axios.post(baseURL + '/uploadFile', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -432,7 +432,7 @@ export async function cleanXlsxAPI(queriedJobFolder, fileNameArray) {
         await formData.append('removeParentId', queriedSubFolder[0].id);
 
         try {
-            axios.post(baseURL + '/moveFile', formData, {});
+            await axios.post(baseURL + '/moveFile', formData, {});
         } catch (err) {
             if (err.response.status === 500) {
             // setMessage('There was a problem with the server');

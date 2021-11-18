@@ -236,8 +236,10 @@ export default function Dashboard() {
       {
         loading ?
         
-        <div style = {{ height:"93vh", width:"100%", display:"flex", justifyContent:"center", alignItems:"center" }}>
+        <div style = {{ height:"93vh", width:"100%", display:"flex", justifyContent:"center", alignItems:"center", flexDirection:"column" }}>
           <PuffLoader color={'#8B0000'} loading={loading} size={150}/>
+          <h5 className="mt-4">Files are being uploaded and processed, this procedure may take a while</h5>
+          <h5>Please do not close the tab or browser</h5>
         </div>
         
         :
@@ -285,7 +287,7 @@ export default function Dashboard() {
                 <h5>CREATE NEW JOB</h5>
               </Container>
               <Card.Body className="d-flex align-items-center justify-content-center">
-                <Button className="w-50" variant="outline-dark" type="submit">CREATE</Button>
+                <Button className="w-50" variant="outline-dark" type="submit" disabled>CREATE</Button>
               </Card.Body>
             </Card>
           </Col>
@@ -311,10 +313,10 @@ export default function Dashboard() {
               <h5>ADMIN DOCUMENTS</h5>
             </Container>
             <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-              <Button className="w-100" variant="outline-dark" type="submit" onClick={() => {}}>FEE PROPOSAL</Button>
-              <Button className="w-100" variant="outline-dark" type="submit" onClick={() => {}}>FEE VARIATION</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">LETTER</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">REPORT</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>FEE PROPOSAL</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>FEE VARIATION</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>LETTER</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>REPORT</Button>
             </Container>
           </Col>
           <Col>
@@ -322,9 +324,9 @@ export default function Dashboard() {
                 <h5>CONCEPT</h5>
               </Container>
               <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-                <Button className="w-100" variant="outline-dark" type="submit">DESIGN BREIF</Button>
-                <Button className="w-100" variant="outline-dark" type="submit">GEOTECH FEE REQUEST</Button>
-                <Button className="w-100" variant="outline-dark" type="submit">CONCEPT DESIGN CHECKLIST</Button>
+                <Button className="w-100" variant="outline-dark" type="submit" disabled>DESIGN BREIF</Button>
+                <Button className="w-100" variant="outline-dark" type="submit" disabled>GEOTECH FEE REQUEST</Button>
+                <Button className="w-100" variant="outline-dark" type="submit" disabled>CONCEPT DESIGN CHECKLIST</Button>
               </Container>
           </Col>
           <Col>
@@ -332,9 +334,9 @@ export default function Dashboard() {
               <h5>DESIGN & DOCUMENTATION</h5>
             </Container>
             <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-              <Button className="w-100" variant="outline-dark" type="submit">SAFETY IN DESIGN REPORT</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">STRUCTURAL SPECIFICATIONS</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">CALCULATION DOCUMENT</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>SAFETY IN DESIGN REPORT</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>STRUCTURAL SPECIFICATIONS</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>CALCULATION DOCUMENT</Button>
             </Container>
           </Col>
         </Row>
@@ -344,10 +346,10 @@ export default function Dashboard() {
               <h5>CONSTRUCTION</h5>
             </Container>
             <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-              <Button className="w-100" variant="outline-dark" type="submit">SITE INSPECTION REPORT</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">LETTER OF COMPLIANCE</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">SHOP DRAWING REVIEW</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">CERTIFICATION LETTER</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>SITE INSPECTION REPORT</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>LETTER OF COMPLIANCE</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>SHOP DRAWING REVIEW</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>CERTIFICATION LETTER</Button>
             </Container>
           </Col>
           <Col>
@@ -355,10 +357,10 @@ export default function Dashboard() {
               <h5>QA</h5>
             </Container>
             <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-              <Button className="w-100" variant="outline-dark" type="submit">VERIFY ENGINEERING CHECKLIST</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">VERIFY BIM CHECKLIST</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">VERIFY DRAWING REVIEW</Button>
-              <Button className="w-100" variant="outline-dark" type="submit">VERIFY SAFETY IN DESIGN</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>VERIFY ENGINEERING CHECKLIST</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>VERIFY BIM CHECKLIST</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>VERIFY DRAWING REVIEW</Button>
+              <Button className="w-100" variant="outline-dark" type="submit" disabled>VERIFY SAFETY IN DESIGN</Button>
             </Container>
           </Col>
           <Col></Col>
