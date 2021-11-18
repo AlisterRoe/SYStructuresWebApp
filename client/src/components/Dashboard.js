@@ -238,7 +238,7 @@ export default function Dashboard() {
         
         <div style = {{ height:"93vh", width:"100%", display:"flex", justifyContent:"center", alignItems:"center", flexDirection:"column" }}>
           <PuffLoader color={'#8B0000'} loading={loading} size={150}/>
-          <h5 className="mt-4">Files are being uploaded and processed - this procedure may take a while</h5>
+          <h5 className="mt-4">Files are being uploaded - this process may take a while</h5>
           <h5>Please do not close tab or browser</h5>
         </div>
         
