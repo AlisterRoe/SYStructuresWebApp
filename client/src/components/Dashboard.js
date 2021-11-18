@@ -11,7 +11,7 @@ import * as XLSX from "xlsx"
 export default function Dashboard() {
   const baseURL = "http://localhost:5000";
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const [error, setError] = useState("")
   const { currentUser, logout } = useAuth()
