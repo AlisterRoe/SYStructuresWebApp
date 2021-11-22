@@ -173,19 +173,25 @@ export default function Dashboard() {
     e.target.value = null; // reset onChange
   };
 
+  var issuedFiles = null;
+
   async function onChangeIssued(e) {
     if (e.target.files[0] !== null) {
-      await saveIssuedDoc(e.target.files);
+      issuedFiles = await e.target.files;
+      await readXlsxFile.current.click();
+      // await saveIssuedDoc(e.target.files);
     }
-    e.target.value = null; // reset onChange
+    // e.target.value = null; // reset onChange
   };
   
   async function onChangeXlsx(e) {
     if (e.target.files[0] !== null) {
       // await readExcel(e.target.files[0]);
       // await getFileList(xlsxItems);
+      await saveIssuedDoc(issuedFiles);
       await cleanXlsx(e.target.files[0]);
     }
+    issuedFiles = await null;
     e.target.value = null; // reset onChange
   };
 
