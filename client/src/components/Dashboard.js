@@ -214,16 +214,22 @@ export default function Dashboard() {
   return (
     <>
     <RemarkModal show={showRemarkModal} onHide={handleCloseRemarkModal} remarkdata={remarkData}/>
-      <Navbar className="navbar-dark bg-dark" style={{ minHeight: "7vh" }}>
-        <Container style={{ minWidth: "90vw" }}>
-          <Navbar.Brand>SY STRUCTURES</Navbar.Brand>
-            <Nav className="mr-auto">
-              <Nav.Link href="/update-profile">Update Profile</Nav.Link>
-              <Nav.Link>Help</Nav.Link>
-              <Link onClick={handleLogout} className="btn btn-primary pull-right">
-                Log Out
-              </Link>
-            </Nav>
+      <Navbar className="" style={{ minHeight: "7vh"}}>
+        <Container style={{ minWidth: "97vw" }}>
+          <Navbar.Brand>
+            <img
+            alt=""
+            src="https://systructures.com.au/wp-content/uploads/2020/05/sy-logo.png"
+            className="d-inline-block align-top"
+          />{' '}
+          </Navbar.Brand>
+          <Nav className="mr-auto">
+            <Nav.Link href="/update-profile">Update Profile</Nav.Link>
+            {/* <Nav.Link>Help</Nav.Link> */}
+            <Link style={{ backgroundColor: "#666666", color: "#FFFFFF" }} onClick={handleLogout} className="btn pull-right">
+              Log Out
+            </Link>
+          </Nav>
         </Container>
       </Navbar>
 
