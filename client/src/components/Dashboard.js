@@ -257,7 +257,7 @@ export default function Dashboard() {
         :
 
         <Container fluid>
-        <Row style={{ height: "25vh" }}>
+        <Row style={{ height: "25vh" }} className="mb-4">
           <Col xs={3} className="d-flex align-items-start justify-content-center mt-2">
             <Card style={{ minHeight: "90%", borderRadius: "20px", backgroundColor: "#810B0A", borderColor: "lightgray" }} className="w-75 m-2">
               <Container style={{ color: "#FFF" }} className="mt-3 text-center border-bottom">
