@@ -85,15 +85,15 @@ export default function Dashboard() {
       
       await setLoading(false);
       await setShowFileUploadError(false);
-      await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
-      await setShowFileUploadSuccess(true);
+      // await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
+      // await setShowFileUploadSuccess(true);
       
     }
   }
 
   var xlsxItems = [];
 
-  async function cleanXlsx(xlsxFile) {
+  async function cleanXlsx(xlsxFile, fileArrayFunc) {
     if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
       setShowFileUploadError(true);
@@ -105,7 +105,7 @@ export default function Dashboard() {
       
       await setLoading(false);
       await setShowFileUploadError(false);
-      await setMessage('Successfully cleaned files');
+      await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
       await setShowFileUploadSuccess(true);
       
     }
@@ -189,7 +189,7 @@ export default function Dashboard() {
       // await readExcel(e.target.files[0]);
       // await getFileList(xlsxItems);
       await saveIssuedDoc(issuedFiles);
-      await cleanXlsx(e.target.files[0]);
+      await cleanXlsx(e.target.files[0], issuedFiles);
     }
     issuedFiles = await null;
     e.target.value = null; // reset onChange
@@ -251,27 +251,37 @@ export default function Dashboard() {
         :
 
         <Container fluid>
-        <Row style={{  height: "25vh" }}>
-          <Col xs={4} className="align-middle">
-            <Card className="m-2">
-              <Container className="mt-2">
+        <Row style={{ height: "25vh" }}>
+          <Col xs={3} className="d-flex align-items-start justify-content-center mt-2">
+            <Card style={{ minHeight: "90%" }} className="w-75 m-2">
+              <Container className="mt-3 text-center border-bottom">
+                <h4>CREATE NEW JOB</h4>
+              </Container>
+              <Card.Body className="d-flex align-items-center justify-content-center">
+                <Button className="w-50" variant="outline-dark" type="submit" disabled>CREATE</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col xs={6} className="align-middle mt-2">
+            <Card style={{ minHeight: "90%" }} className="m-2">
+              <Container className="mt-3 text-center border-bottom">
                 <h4>SELECT JOB</h4>
               </Container>
               <Card.Body>
                 <Form className="d-flex align-items-center justify-content-center flex-row" onSubmit={handleSubmit}>
                   <Container>
-                    <Form.Group className="mb-2" id="job-number">
+                    <Form.Group id="job-number">
                         <Form.Label className="mb-0">JOB NUMBER</Form.Label>
                         <Form.Control type="text" placeholder="Enter Job #" ref={jobNumberRef} required />
                     </Form.Group>
-                    <Form.Group id="job-name">
+                    {/* <Form.Group id="job-name">
                         <Form.Label className="mb-0">JOB NAME</Form.Label>
                         <Form.Control type="text" />
-                    </Form.Group>
+                    </Form.Group> */}
+                    <Button className="w-100 mt-3 mb-2" variant="outline-dark" type="submit">SELECT</Button>
                   </Container>
                   <Container className="text-center">
                     <div>CURRENT JOB</div> {queriedJobFolder === null || queriedJobFolder.length === 0 ? 'No Job Selected' : queriedJobFolder[0].name}
-                    <Button className="w-100 mt-5" variant="outline-dark" type="submit">SELECT</Button>
                   </Container>
                 </Form>
               </Card.Body>
@@ -284,18 +294,8 @@ export default function Dashboard() {
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT/S</Button>
 
             <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv"/>
-            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}}>CLEAN CURRENT PDF (EXCEL)</Button>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}} style={{display: 'none'}}>CLEAN CURRENT PDF (EXCEL)</Button>
 
-          </Col>
-          <Col xs={3} className="d-flex align-items-center justify-content-center">
-            <Card className="w-75 h-75">
-              <Container className="mt-3 text-center">
-                <h5>CREATE NEW JOB</h5>
-              </Container>
-              <Card.Body className="d-flex align-items-center justify-content-center">
-                <Button className="w-50" variant="outline-dark" type="submit" disabled>CREATE</Button>
-              </Card.Body>
-            </Card>
           </Col>
         </Row>
         <Row style={{ height: "34vh" }}>
