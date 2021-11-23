@@ -253,21 +253,21 @@ export default function Dashboard() {
         <Container fluid>
         <Row style={{ height: "25vh" }}>
           <Col xs={3} className="d-flex align-items-start justify-content-center mt-2">
-            <Card style={{ minHeight: "90%" }} className="w-75 m-2">
-              <Container className="mt-3 text-center border-bottom">
+            <Card style={{ minHeight: "90%", borderRadius: "20px", backgroundColor: "#810B0A", borderColor: "lightgray" }} className="w-75 m-2">
+              <Container style={{ color: "#FFF" }} className="mt-3 text-center border-bottom">
                 <h4>CREATE NEW JOB</h4>
               </Container>
-              <Card.Body className="d-flex align-items-center justify-content-center">
+              <Card.Body style={{ backgroundColor: "white", borderBottomLeftRadius: "18px", borderBottomRightRadius: "18px" }} className="d-flex align-items-center justify-content-center">
                 <Button className="w-50" variant="outline-dark" type="submit" disabled>CREATE</Button>
               </Card.Body>
             </Card>
           </Col>
           <Col xs={6} className="align-middle mt-2">
-            <Card style={{ minHeight: "90%" }} className="m-2">
-              <Container className="mt-3 text-center border-bottom">
+            <Card style={{ minHeight: "90%", borderRadius: "20px", backgroundColor: "#810B0A", borderColor: "lightgray" }} className="m-2">
+              <Container style={{ color: "#FFF" }} className="mt-3 text-center border-bottom">
                 <h4>SELECT JOB</h4>
               </Container>
-              <Card.Body>
+              <Card.Body style={{ backgroundColor: "white", borderBottomLeftRadius: "18px", borderBottomRightRadius: "18px" }}>
                 <Form className="d-flex align-items-center justify-content-center flex-row" onSubmit={handleSubmit}>
                   <Container>
                     <Form.Group id="job-number">
