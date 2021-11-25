@@ -16,7 +16,7 @@ export class RemarkModal extends Component {
     
     renameID(fileID, originalName, remark) {
         axios
-          .post('http://localhost:5000/renameID', {
+          .post('https://sy-custom-api-web-app.ts.r.appspot.com/renameID', {
             name: originalName + " - " + remark,
             fileId: fileID
         })

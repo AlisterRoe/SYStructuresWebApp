@@ -1,7 +1,7 @@
 import axios from 'axios'
 import moment from 'moment'
 
-const baseURL = "http://localhost:5000";
+const baseURL = "https://sy-custom-api-web-app.ts.r.appspot.com";
 
 export async function savedReceivedDocAPI(queriedJobFolder, subFolder, fileArray) {
     var queriedSubFolder = null;

@@ -9,7 +9,7 @@ import PuffLoader from "react-spinners/PuffLoader"
 import * as XLSX from "xlsx"
 
 export default function Dashboard() {
-  const baseURL = "http://localhost:5000";
+  const baseURL = "https://sy-custom-api-web-app.ts.r.appspot.com";
 
   const [loading, setLoading] = useState(false)
 
