@@ -37,7 +37,7 @@ export default function Signup() {
                 <div className="w100" style={{ maxWidth: "400px" }}>
                     <Card>
                         <Card.Body>
-                            <h2 className="text-center mb-4">Sign Up</h2>
+                            <h2 className="text-center mb-4">Add New User</h2>
                             {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="email">
@@ -52,12 +52,12 @@ export default function Signup() {
                                     <Form.Label>Password Confirmation</Form.Label>
                                     <Form.Control type="password" ref={passwordConfirmRef} required />
                                 </Form.Group>
-                                <Button disabled={loading} className="w-100 mt-4" type="submit">Sign Up</Button>
+                                <Button disabled={loading} className="w-100 mt-4" type="submit">Add New User</Button>
                             </Form>
                         </Card.Body>
                     </Card>
                     <div className="w-100 text-center mt-2">
-                        Already have an account? <Link to="/login">Log In</Link>
+                        <Link to="/">Cancel</Link>
                     </div>
                 </div>
             </Container>

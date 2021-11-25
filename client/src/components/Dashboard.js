@@ -225,6 +225,7 @@ export default function Dashboard() {
           </Navbar.Brand>
           <Nav className="mr-auto">
             <Nav.Link href="/update-profile">Update Profile</Nav.Link>
+            <Nav.Link href="/signup">Add New User</Nav.Link>
             {/* <Nav.Link>Help</Nav.Link> */}
             <Link style={{ backgroundColor: "#666666", color: "#FFFFFF" }} onClick={handleLogout} className="btn pull-right">
               Log Out
