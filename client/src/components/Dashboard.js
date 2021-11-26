@@ -178,7 +178,8 @@ export default function Dashboard() {
   async function onChangeIssued(e) {
     if (e.target.files[0] !== null) {
       issuedFiles = await e.target.files;
-      await readXlsxFile.current.click();
+      await document.getElementById("liveReadXlsxFile").click();
+      // await readXlsxFile.current.click();
       // await saveIssuedDoc(e.target.files);
     }
     // e.target.value = null; // reset onChange
@@ -300,7 +301,7 @@ export default function Dashboard() {
             <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} accept=".pdf" multiple/>
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT/S</Button>
 
-            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv"/>
+            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv" id="liveReadXlsxFile"/>
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}} style={{display: 'none'}}>CLEAN CURRENT PDF (EXCEL)</Button>
 
           </Col>
