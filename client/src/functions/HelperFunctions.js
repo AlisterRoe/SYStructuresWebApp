@@ -317,7 +317,7 @@ export async function savedIssuedDocCurrentAPI(queriedJobFolder, fileArray) {
         await formData.append('removeParentId', queriedSubFolder[0].id);
 
         try {
-            await axios.post(baseURL + '/moveFile', formData, {});
+            await axios.post(baseURL + '/moveFile', formData);
         } catch (err) {
             if (err.response.status === 500) {
             // setMessage('There was a problem with the server');
@@ -432,7 +432,7 @@ export async function cleanXlsxAPI(queriedJobFolder, fileNameArray) {
         await formData.append('removeParentId', queriedSubFolder[0].id);
 
         try {
-            await axios.post(baseURL + '/moveFile', formData, {});
+            await axios.post(baseURL + '/moveFile', formData);
         } catch (err) {
             if (err.response.status === 500) {
             // setMessage('There was a problem with the server');
