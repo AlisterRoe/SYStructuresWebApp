@@ -344,7 +344,7 @@ export default function Dashboard() {
                 <h5>CONCEPT</h5>
               </Container>
               <Container className="d-flex align-items-center flex-column justify-content-evenly"  style={{ height: "80% " }}>
-                <Button className="w-100" variant="outline-dark" type="submit" disabled>DESIGN BREIF</Button>
+                <Button className="w-100" variant="outline-dark" type="submit" disabled>DESIGN BRIEF</Button>
                 <Button className="w-100" variant="outline-dark" type="submit" disabled>GEOTECH FEE REQUEST</Button>
                 <Button className="w-100" variant="outline-dark" type="submit" disabled>CONCEPT DESIGN CHECKLIST</Button>
               </Container>
