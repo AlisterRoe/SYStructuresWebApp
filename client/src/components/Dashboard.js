@@ -34,15 +34,24 @@ export default function Dashboard() {
 
   const [queriedJobFolder, setQueriedJobFolder] = useState(null);
 
-  function getJobID(name) {
-    axios
+  async function getJobID(name) {
+    await axios
       .post(baseURL+'/getFolder', {
         q: "mimeType='application/vnd.google-apps.folder' and name='" + name + "'",
         fields: 'files(name,id)'
       })
-      .then((response) => {
-        const myQueriedJobFolder = response.data;
-        setQueriedJobFolder(myQueriedJobFolder);
+      .then(async (response) => {
+        const myQueriedJobFolder = await response.data;
+        await setQueriedJobFolder(myQueriedJobFolder);
+        if (myQueriedJobFolder === null || myQueriedJobFolder.length === 0) {
+          await setShowFileUploadSuccess(false);
+          setFileUploadError("No job was found with that number");
+          setShowFileUploadError(true);
+        } else {
+          await setShowFileUploadError(false);
+          await setMessage('Job ' + myQueriedJobFolder[0].name + ' selected');
+          await setShowFileUploadSuccess(true);
+        }
       });
   }
   
@@ -60,6 +69,7 @@ export default function Dashboard() {
       setShowFileUploadError(true);
       return;
     } else {
+      await setShowFileUploadSuccess(false);
       await setLoading(true);
       await setRemarkData(await savedReceivedDocAPI(queriedJobFolder, subFolder, fileArrayFunc));
       await handleShowRemarkModal();
@@ -78,6 +88,7 @@ export default function Dashboard() {
       setShowFileUploadError(true);
       return;
     } else {
+      await setShowFileUploadSuccess(false);
       await setLoading(true);
       await setRemarkData(await savedIssuedDocIssuedAPI(queriedJobFolder, fileArrayFunc));
       await savedIssuedDocCurrentAPI(queriedJobFolder, fileArrayFunc);
@@ -99,6 +110,7 @@ export default function Dashboard() {
       setShowFileUploadError(true);
       return;
     } else {
+      await setShowFileUploadSuccess(false);
       await setLoading(true);
       await readExcel(xlsxFile);
       await cleanXlsxAPI(queriedJobFolder, await getFileList(xlsxItems));
@@ -136,7 +148,6 @@ export default function Dashboard() {
     });
 
     await promise.then(async (d) => {
-      // console.log(d);
       xlsxItems = d;
     });
   };
@@ -146,7 +157,6 @@ export default function Dashboard() {
     for (var i = 0; i < sheetItems.length; i++) {
       const objectArray = Object.values(sheetItems[i]);
       var xlsxFileName = queriedJobFolder[0].name + "_" + objectArray[0] + "_" + objectArray[1] + "_" + objectArray[2];
-      // console.log(xlsxFileName);
       xlsxFileList.push(xlsxFileName);
     }
     xlsxItems = [];
@@ -155,7 +165,7 @@ export default function Dashboard() {
   
   const jobNumberRef = useRef()
 
-  function handleSubmit(e) {
+  function handleSelectJobSubmit(e) {
     e.preventDefault()
     
     getJobID(jobNumberRef.current.value)
@@ -173,27 +183,27 @@ export default function Dashboard() {
     e.target.value = null; // reset onChange
   };
 
-  var issuedFiles = null;
+  var issuedFiles = [];
 
   async function onChangeIssued(e) {
     if (e.target.files[0] !== null) {
-      issuedFiles = await e.target.files;
+      issuedFiles = await [];
+      for (var i = 0; i < e.target.files.length; i++) {
+        await issuedFiles.push(e.target.files[i]);
+      }
+      e.target.value = await null;
       await document.getElementById("liveReadXlsxFile").click();
-      // await readXlsxFile.current.click();
-      // await saveIssuedDoc(e.target.files);
     }
-    // e.target.value = null; // reset onChange
   };
   
   async function onChangeXlsx(e) {
     if (e.target.files[0] !== null) {
-      // await readExcel(e.target.files[0]);
-      // await getFileList(xlsxItems);
+      console.log(issuedFiles)
       await saveIssuedDoc(issuedFiles);
       await cleanXlsx(e.target.files[0], issuedFiles);
     }
-    issuedFiles = await null;
-    e.target.value = null; // reset onChange
+    issuedFiles = await [];
+    e.target.value = null;
   };
 
   function onButtonClickReceived() {
@@ -276,16 +286,12 @@ export default function Dashboard() {
                 <h4>SELECT JOB</h4>
               </Container>
               <Card.Body style={{ backgroundColor: "white", borderBottomLeftRadius: "18px", borderBottomRightRadius: "18px" }}>
-                <Form className="d-flex align-items-center justify-content-center flex-row" onSubmit={handleSubmit}>
+                <Form className="d-flex align-items-center justify-content-center flex-row" onSubmit={handleSelectJobSubmit}>
                   <Container>
                     <Form.Group id="job-number">
                         <Form.Label className="mb-0">JOB NUMBER</Form.Label>
                         <Form.Control type="text" placeholder="Enter Job #" ref={jobNumberRef} required />
                     </Form.Group>
-                    {/* <Form.Group id="job-name">
-                        <Form.Label className="mb-0">JOB NAME</Form.Label>
-                        <Form.Control type="text" />
-                    </Form.Group> */}
                     <Button className="w-100 mt-3 mb-2" variant="outline-dark" type="submit">SELECT</Button>
                   </Container>
                   <Container className="text-center">
