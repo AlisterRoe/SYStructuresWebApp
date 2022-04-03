@@ -23,13 +23,8 @@ export default function Dashboard() {
       .map((v, i) => 
       fetch(`https://api.projectworksapp.com/api/v1.0/Projects?page=1&pageSize=20000&includeCustomFields=true`,
         {
-          // method: 'GET',
-          // mode: 'no-cors',
           headers: {
             'Authorization': 'Basic ' + encodedAuth,
-            // 'accept':'*/*',
-            // 'Content-Type':'application/json',
-            // 'Accept-Encoding': 'gzip, deflate, br'
           }
         })
         .then(res => res.json())
@@ -49,11 +44,6 @@ export default function Dashboard() {
           }
         }))
       )
-    // Promise.all(promises).then((jobsArray) => {
-    //   return jobsArray.map(res => res.json().then(({ProjectNumber, ProjectName}) => {
-    //     return jobs.push({ProjectNumber, ProjectName})
-    //   }))
-    // })
     setOptions(jobs)
   }, [])
 
@@ -350,6 +340,7 @@ export default function Dashboard() {
                 <Form className="d-flex align-items-center justify-content-center flex-row" onSubmit={handleSelectJobSubmit}>
                   <Container style={{ width: "200%" }}>
                     <Form.Group id="job-number">
+                        <Form.Label className="mb-0">JOB NUMBER</Form.Label>
                         <Typeahead
                           id="typeAheadID"
                           onChange={setSelected}
@@ -358,7 +349,6 @@ export default function Dashboard() {
                           onInputChange={handleInputChange}
                           selected={selected} required
                         />
-                        <Form.Label className="mb-0">JOB NUMBER</Form.Label>
                         <Form.Control type="text" placeholder="Enter Job #" ref={jobNumberRef} style={{display: 'none'}}></Form.Control>
                     </Form.Group>
                     <Button className="w-100 mt-3 mb-2" variant="outline-dark" type="submit">SELECT</Button>
