@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Alert, Navbar, Container, Nav, Row, Col, Card, Form, Button } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
@@ -7,9 +7,55 @@ import { savedReceivedDocAPI, savedIssuedDocIssuedAPI, savedIssuedDocCurrentAPI,
 import { RemarkModal } from './RemarkModal'
 import PuffLoader from "react-spinners/PuffLoader"
 import * as XLSX from "xlsx"
+import { Typeahead } from 'react-bootstrap-typeahead';
 
 export default function Dashboard() {
   const baseURL = "https://sy-custom-api-web-app.ts.r.appspot.com";
+
+  const [options, setOptions] = useState([])
+
+  useEffect(() => {
+    const jobs = []
+    var decodedAuth = process.env.REACT_APP_PROJECTWORKS_API_CONSUMER_KEY + ':' + process.env.REACT_APP_PROJECTWORKS_API_CONSUMER_SECRET
+    var encodedAuth = Buffer.from(decodedAuth).toString('base64')
+    const promises = new Array(1)
+      .fill()
+      .map((v, i) => 
+      fetch(`https://api.projectworksapp.com/api/v1.0/Projects?page=1&pageSize=20000&includeCustomFields=true`,
+        {
+          // method: 'GET',
+          // mode: 'no-cors',
+          headers: {
+            'Authorization': 'Basic ' + encodedAuth,
+            // 'accept':'*/*',
+            // 'Content-Type':'application/json',
+            // 'Accept-Encoding': 'gzip, deflate, br'
+          }
+        })
+        .then(res => res.json())
+        .then(data => data.forEach(obj => {
+          var projectNumber = obj['ProjectNumber']
+          var projectName = obj['ProjectName']
+          var projectOffice = obj['CustomFields'][0]['Value']
+          if (projectOffice === null || projectOffice === "1") {
+            projectOffice = "M"
+          } else if (projectOffice === "2") {
+            projectOffice = "A"
+          }
+          if (projectNumber.includes('.')) {
+            jobs.push(projectNumber.substring(0, projectNumber.indexOf('.')) + projectOffice + " | " + projectName)
+          } else { 
+            jobs.push(projectNumber + projectOffice + " | " + projectName)
+          }
+        }))
+      )
+    // Promise.all(promises).then((jobsArray) => {
+    //   return jobsArray.map(res => res.json().then(({ProjectNumber, ProjectName}) => {
+    //     return jobs.push({ProjectNumber, ProjectName})
+    //   }))
+    // })
+    setOptions(jobs)
+  }, [])
 
   const [loading, setLoading] = useState(false)
 
@@ -96,15 +142,15 @@ export default function Dashboard() {
       
       await setLoading(false);
       await setShowFileUploadError(false);
-      // await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
-      // await setShowFileUploadSuccess(true);
+      await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
+      await setShowFileUploadSuccess(true);
       
     }
   }
 
   var xlsxItems = [];
 
-  async function cleanXlsx(xlsxFile, fileArrayFunc) {
+  async function cleanXlsx(xlsxFile) {
     if (queriedJobFolder === null || queriedJobFolder.length === 0) {
       setFileUploadError("No job selected. Please select a job before attempting to upload a file.");
       setShowFileUploadError(true);
@@ -117,7 +163,7 @@ export default function Dashboard() {
       
       await setLoading(false);
       await setShowFileUploadError(false);
-      await setMessage('Successfully uploaded ' + fileArrayFunc.length + ' files');
+      await setMessage('Successfully uploaded cleaned files');
       await setShowFileUploadSuccess(true);
       
     }
@@ -164,11 +210,26 @@ export default function Dashboard() {
   }
   
   const jobNumberRef = useRef()
+  const [typeAheadValue, setTypeAheadValue] = useState('');
 
   function handleSelectJobSubmit(e) {
     e.preventDefault()
-    
-    getJobID(jobNumberRef.current.value)
+    if (typeAheadValue === '' && selected.length === 0) {
+      setFileUploadError("Job field cannot be empty");
+      setShowFileUploadError(true);
+    } else if (typeAheadValue.length <= 5 && selected.length !== 0) {
+      var jobIdSearch = selected[0].substring(0, selected[0].indexOf(' | '))
+      getJobID(jobIdSearch)
+    } else if (typeAheadValue.includes(' | ')) {
+      setTypeAheadValue(typeAheadValue.substring(0, typeAheadValue.indexOf(' | ')))
+      getJobID(typeAheadValue)
+    } else {
+      getJobID(typeAheadValue)
+    }
+  }
+
+  function handleInputChange(input) {
+    setTypeAheadValue(input)
   }
 
   const [receivedSubFolder, setReceivedSubFolder] = useState('')
@@ -191,19 +252,18 @@ export default function Dashboard() {
       for (var i = 0; i < e.target.files.length; i++) {
         await issuedFiles.push(e.target.files[i]);
       }
+      await saveIssuedDoc(issuedFiles);
       e.target.value = await null;
-      await document.getElementById("liveReadXlsxFile").click();
+      // await document.getElementById("liveReadXlsxFile").click();
     }
   };
   
   async function onChangeXlsx(e) {
     if (e.target.files[0] !== null) {
-      console.log(issuedFiles)
-      await saveIssuedDoc(issuedFiles);
       await cleanXlsx(e.target.files[0], issuedFiles);
     }
     issuedFiles = await [];
-    e.target.value = null;
+    e.target.value = await null;
   };
 
   function onButtonClickReceived() {
@@ -221,6 +281,7 @@ export default function Dashboard() {
   const [showRemarkModal, setShowRemarkModal] = useState(false);
   const handleCloseRemarkModal = () => setShowRemarkModal(false);
   const handleShowRemarkModal = () => setShowRemarkModal(true);
+  const [selected, setSelected] = useState([]);
 
   return (
     <>
@@ -267,7 +328,7 @@ export default function Dashboard() {
         </div>
         
         :
-
+        
         <Container fluid>
         <Row style={{ height: "25vh" }} className="mb-4">
           <Col xs={3} className="d-flex align-items-start justify-content-center mt-2">
@@ -287,10 +348,18 @@ export default function Dashboard() {
               </Container>
               <Card.Body style={{ backgroundColor: "white", borderBottomLeftRadius: "18px", borderBottomRightRadius: "18px" }}>
                 <Form className="d-flex align-items-center justify-content-center flex-row" onSubmit={handleSelectJobSubmit}>
-                  <Container>
+                  <Container style={{ width: "200%" }}>
                     <Form.Group id="job-number">
+                        <Typeahead
+                          id="typeAheadID"
+                          onChange={setSelected}
+                          options={options}
+                          placeholder="Enter Job"
+                          onInputChange={handleInputChange}
+                          selected={selected} required
+                        />
                         <Form.Label className="mb-0">JOB NUMBER</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Job #" ref={jobNumberRef} required />
+                        <Form.Control type="text" placeholder="Enter Job #" ref={jobNumberRef} style={{display: 'none'}}></Form.Control>
                     </Form.Group>
                     <Button className="w-100 mt-3 mb-2" variant="outline-dark" type="submit">SELECT</Button>
                   </Container>
@@ -307,8 +376,8 @@ export default function Dashboard() {
             <input type='file' onChange={onChangeIssued} ref={saveIssuedDocInput} style={{display: 'none'}} accept=".pdf" multiple/>
             <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickIssued()}}>ISSUE SY DOCUMENT/S</Button>
 
-            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv" id="liveReadXlsxFile"/>
-            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}} style={{display: 'none'}}>CLEAN CURRENT PDF (EXCEL)</Button>
+            <input type='file' onChange={onChangeXlsx} ref={readXlsxFile} style={{display: 'none'}} accept=".xlsx, .xls, .csv"/>
+            <Button className="w-50" variant="outline-dark" onClick={() => {onButtonClickXlsx()}}>CLEAN CURRENT PDF</Button>
 
           </Col>
         </Row>
